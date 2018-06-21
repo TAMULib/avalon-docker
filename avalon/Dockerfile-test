@@ -1,4 +1,4 @@
-FROM        ruby:2.4
+FROM        ruby:2.4.4-jessie
 MAINTAINER  Phuong Dinh <pdinh@indiana.edu>
 RUN         curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
          && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
