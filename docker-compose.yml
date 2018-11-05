@@ -1,109 +1,101 @@
-version: '2'
+version: '3'
 
 volumes:
+  db-fedora:
+  db-avalon:
+  masterfiles:
   streaming:
-  database:
   fedora:
   work:
   solr:
-    
+  gems:
+
+networks:
+  external:
+  internal:
+
 services:
-  db:
-    image: avalonmediasystem/db:fedora4
-    build: ./db
+  db-fedora:
+    image: postgres
     volumes:
-      - database:/data
+      - db-fedora:/data
     environment:
-      - AVALON_DB_PASSWORD
-      - FEDORA_DB_PASSWORD
       - PGDATA=/data
       - POSTGRES_USER=postgres
-    ports:
-      - "5432:5432"
+      - POSTGRES_DB=fcrepo
+      - POSTGRES_PASSWORD=known-happen-machine-DARE
+    networks:
+      internal:
+  db-avalon:
+    image: postgres
+    volumes:
+      - db-avalon:/data
+    environment:
+      - PGDATA=/data
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=avalon
+      - POSTGRES_PASSWORD=orderly-ocean-tube-stick
+    networks:
+      internal:
   fedora:
     image: avalonmediasystem/fedora:4.7.5
-    build: 
-      context: ./fedora
-      args:
-        - FEDORA_DB_PASSWORD
-        - FEDORA_VERSION=4.7.5
-    environment:
-      - JAVA_OPTIONS=${JAVA_OPTIONS} -Dfcrepo.postgresql.password=${FEDORA_DB_PASSWORD} -Dfcrepo.postgresql.username=fedora -Dfcrepo.postgresql.host=db -Dfcrepo.modeshape.configuration=classpath:/config/jdbc-postgresql/repository.json -Dfcrepo.home=/var/lib/jetty/data
     depends_on:
-      - db
+      - db-fedora
     volumes:
       - fedora:/var/lib/jetty/data
-    ports:
-      - "8984:8080"
+    environment:
+      - JAVA_OPTIONS=-Dfcrepo.home=/var/lib/jetty/data -Dfcrepo.modeshape.configuration=classpath:/config/jdbc-postgresql/repository.json -Dfcrepo.postgresql.username=postgres -Dfcrepo.postgresql.password=known-happen-machine-DARE -Dfcrepo.postgresql.host=db-fedora
+    networks:
+      internal:
   solr:
-    image: avalonmediasystem/solr:latest
-    build: 
-      context: ./solr
-      args:
-        - AVALON_BRANCH
-    ports:
-      - "8983:8983"
+    # image: solr:6.6-alpine 
+    image: solr:7.0-alpine 
     volumes:
       - solr:/opt/solr/server/solr/mycores
-    entrypoint:
-      - docker-entrypoint.sh
-      - solr-precreate
-      - avalon
-      - /opt/solr/avalon_conf
+    command: bin/solr -cloud -noprompt -f -p 8983
+    networks:
+      internal:
   matterhorn:
     image: avalonmediasystem/matterhorn
-    build: 
-      context: ./matterhorn
-      args:
-        - MATTERHORN_VER=1.4
-        - MATTERHORN_BRANCH=1.4.x
     volumes:
-      - ./masterfiles:/masterfiles
+      - masterfiles:/masterfiles
       - streaming:/streamfiles
       - work:/work
     ports:
       - "8080:8080"
+    networks:
+      internal:
   hls:
     image: avalonmediasystem/nginx
-    build:
-      context: ./nginx
     volumes:
       - streaming:/data
     ports:
        - "8880:80"
+    networks:
+      internal:
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
+    networks:
+      internal:
   avalon:
-    image: avalonmediasystem/avalon:6.4.3
-    build: 
+    image: avalonmediasystem/avalon:6.4.4-ee
+    build:
       context: ./avalon
-      args:
-        - AVALON_BRANCH
-        - SECRET_KEY_BASE
-        - BASE_URL
     depends_on:
-      - db
+      - db-avalon
       - fedora
       - solr
       - redis
     environment:
-      - APP_NAME
-      - SECRET_KEY_BASE
-      - ASSET_HOST
-      - SETTINGS__DOMAIN
-      - DATABASE_URL=postgres://avalon:${AVALON_DB_PASSWORD}@db/avalon
+      - APP_NAME=archivo
+      - SECRET_KEY_BASE=3fe397575565365108556c3e5549f139e8078a8ec8fd2675a83de96289b30550a266ac04488d7086322efbe573738e7b3ae005b2e3d9afd718aa337fa5e329cf
+      - SETTINGS__DOMAIN__HOST=archivo.dlib.indiana.edu
+      - DATABASE_URL=postgres://postgres:orderly-ocean-tube-stick@db-avalon/avalon
       - SETTINGS__DROPBOX__PATH=/masterfiles/dropbox
       - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles/dropbox
-      - EMAIL_COMMENTS
-      - EMAIL_NOTIFICATION
-      - EMAIL_SUPPORT
-      - FEDORA_BASE_PATH
       - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
       - SETTINGS__FFMPEG_PATH=/usr/bin/ffmpeg
-      - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
       - MATTERHORN_URL=http://matterhorn_system_account:CHANGE_ME@matterhorn:8080/
       - SETTINGS__MATTERHORN__MEDIA_PATH=/masterfiles
@@ -111,25 +103,15 @@ services:
       - RAILS_ENV=production
       - SETTINGS__REDIS__HOST=redis
       - SETTINGS__REDIS__PORT=6379
-      - SMTP_ADDRESS
-      - SMTP_AUTHENTICATION
-      - SMTP_DOMAIN
-      - SMTP_ENABLE_STARTTLS_AUTO
-      - SMTP_OPENSSL_VERIFY_MODE
-      - SMTP_PASSWORD
-      - SMTP_PORT
-      - SMTP_USER_NAME
       - SOLR_URL=http://solr:8983/solr/avalon
       - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
-      - SETTINGS__STREAMING__HTTP_BASE=http://${STREAMING_HOST}:8880/avalon
+      - SETTINGS__STREAMING__HTTP_BASE=http://archivo.dlib.indiana.edu:8880/avalon
       - SETTINGS__STREAMING__SERVER=nginx
       - SYSTEM_GROUPS=administrator,group_manager,manager
-      - Z3950_ATTRIBUTE
-      - Z3950_DATABASE
-      - Z3950_HOST
-      - Z3950_PORT
     volumes:
-      - ./masterfiles:/masterfiles
-      - ./gems:/gems
+      - masterfiles:/masterfiles
+      - gems:/gems
     ports:
       - "80:80"
+    networks:
+      internal:

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+cd /home/app/avalonsolr/config
+zip -1 -r solr_hyrax_config.zip /home/app/avalon/solr/config/*
+curl -H "Content-type:application/octet-stream" --data-binary @solr_hyrax_config.zip "http://solr:8983/solr/admin/configs?action=UPLOAD&name=avalon-config"
+curl -H 'Content-type: application/json' http://solr:8983/api/collections/ -d '{create: {name: avalon, config: avalon-config, numShards: 1}}'
+
 # sendmail needs this to work
 line=$(head -n 1 /etc/hosts)
 line2=$(echo $line | awk '{print $2}')
@@ -19,7 +24,3 @@ BACKGROUND=yes bundle exec rake environment resque:scheduler
 RAILS_ENV=production bundle exec rake db:migrate
 exit
 
-cd public/assets/mediaelement_rails
-if [ ! -e flashmediaelement.swf ]; then
-  ln -s flashmediaelement-*.swf flashmediaelement.swf
-fi

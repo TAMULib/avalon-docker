@@ -8,6 +8,7 @@ RUN         apt-get update && apt-get install -y \
             pkg-config \
             lsof \
             sendmail \
+            zip \
          && rm -rf /var/lib/apt/lists/* \
          && apt-get clean
 RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
