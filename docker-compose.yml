@@ -69,7 +69,7 @@ services:
     networks:
       internal:
   hls:
-    image: avalonmediasystem/nginx
+    image: avalonmediasystem/nginx:avalon-7.0
     build:
       context: ./nginx
     volumes:
