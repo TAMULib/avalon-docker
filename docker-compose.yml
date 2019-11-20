@@ -71,6 +71,7 @@ services:
       context: ./avalon
       args:
         - AVALON_BRANCH
+        - AVALON_REV=${AVALON_REV}
         - SECRET_KEY_BASE
         - BASE_URL
     depends_on:

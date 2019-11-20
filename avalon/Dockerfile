@@ -23,6 +23,7 @@ RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
             chown app:docker_env /etc/container_environment.sh
 ARG         AVALON_REPO=https://github.com/avalonmediasystem/avalon.git
 ARG         AVALON_BRANCH=master
+ARG         AVALON_REV
 WORKDIR     /home/app
 USER        app
 RUN         git clone --branch=${AVALON_BRANCH} --depth=1 ${AVALON_REPO}
