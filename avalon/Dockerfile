@@ -22,8 +22,10 @@ RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
             rm -f /etc/service/nginx/down && \
             ln -s /etc/nginx/sites-available/avalon /etc/nginx/sites-enabled/avalon && \
             chown app:docker_env /etc/container_environment.sh
+			
 ARG         AVALON_REPO=https://github.com/avalonmediasystem/avalon.git
 ARG         AVALON_BRANCH=master
+
 WORKDIR     /home/app
 USER        app
 RUN         git clone --branch=${AVALON_BRANCH} --depth=1 ${AVALON_REPO}
@@ -45,6 +47,8 @@ USER        root
 RUN         chown -R app:app /home/app/avalon
 ADD         ./avalon.conf /etc/nginx/sites-available/avalon
 ADD         ./nginx_env.conf /etc/nginx/main.d/env.conf
+
 ADD         rails_init.sh /etc/my_init.d/30_rails_init.sh
+
 RUN         mkdir /streamfiles && chmod 0777 /streamfiles
 VOLUME      /streamfiles

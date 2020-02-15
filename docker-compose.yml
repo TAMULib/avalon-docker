@@ -6,6 +6,10 @@ volumes:
   fedora:
   solr:
 
+networks:
+  internal:
+  external:
+  
 services:
   db:
     image: avalonmediasystem/db:fedora4
@@ -35,7 +39,7 @@ services:
     build:
       context: ./solr
       args:
-        - AVALON_BRANCH
+        - AVALON_REPO_RAW
     volumes:
       - solr:/opt/solr/server/solr/mycores
     entrypoint:
@@ -44,21 +48,21 @@ services:
       - avalon
       - /opt/solr/avalon_conf
   hls:
-    image: avalonmediasystem/nginx
+    image: 10.55.134.48/avalon/nginx:0.2.0
     build:
       context: ./nginx
-    volumes:
-      - streaming:/data
     ports:
        - "8880:80"
+       - "9080:80"
   redis:
     image: redis:alpine
   avalon: &avalon
-    image: avalonmediasystem/avalon:7.0
+    image: 10.55.134.48/avalon/avalon:0.2.0
     build:
       context: ./avalon
       args:
         - AVALON_BRANCH
+        - AVALON_REPO
         - SECRET_KEY_BASE
         - BASE_URL
     depends_on:
@@ -71,7 +75,7 @@ services:
       - SECRET_KEY_BASE
       - ASSET_HOST
       - SETTINGS__DOMAIN
-      - DATABASE_URL=postgres://avalon:${AVALON_DB_PASSWORD}@db/avalon
+      - DATABASE_URL=postgres://postgres:${AVALON_DB_PASSWORD}@srv-pgsql/avalon
       - SETTINGS__DROPBOX__PATH=/masterfiles/dropbox
       - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles/dropbox
       - SETTINGS__ENCODING__WORKING_FILE_PATH=/masterfiles
@@ -81,7 +85,7 @@ services:
       - ENCODE_WORK_DIR=/streamfiles
       - FEDORA_BASE_PATH
       - FEDORA_NAMESPACE=avalon
-      - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
+      - FEDORA_URL=http://srv-fedora:9000/fedora/rest
       - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
@@ -113,7 +117,7 @@ services:
       - ./gems:/gems
       - streaming:/streamfiles
     ports:
-      - "80:80"
+      - "3000:80"
   worker:
     <<: *avalon
     command: su -m -c "cd /home/app/avalon && RAILS_ENV=production bundle exec sidekiq -C config/sidekiq.yml" app
