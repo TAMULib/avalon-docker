@@ -48,7 +48,9 @@ services:
       - avalon
       - /opt/solr/avalon_conf
   hls:
-    image: 10.55.134.48/avalon/nginx:0.2.0
+    hostname: kaltura-dev
+    domainname: library.tamu.edu
+    image: 10.55.134.48/avalon/nginx:${RANCHER_IMAGE_VERSION}
     build:
       context: ./nginx
     ports:
@@ -57,7 +59,9 @@ services:
   redis:
     image: redis:alpine
   avalon: &avalon
-    image: 10.55.134.48/avalon/avalon:0.2.0
+    hostname: avalon-dev
+    domainname: library.tamu.edu
+    image: 10.55.134.48/avalon/avalon:${RANCHER_IMAGE_VERSION}
     build:
       context: ./avalon
       args:
@@ -75,28 +79,30 @@ services:
       - SECRET_KEY_BASE
       - ASSET_HOST
       - SETTINGS__DOMAIN
-      - DATABASE_URL=postgres://postgres:${AVALON_DB_PASSWORD}@srv-pgsql/avalon
       - SETTINGS__DROPBOX__PATH=/masterfiles/dropbox
       - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles/dropbox
       - SETTINGS__ENCODING__WORKING_FILE_PATH=/masterfiles
       - SETTINGS__EMAIL__COMMENTS
       - SETTINGS__EMAIL__NOTIFICATION
-      - SETTINGS__EMAIL__SUPPORT
+      - SETTINGS__EMAIL__SUPPORT      
+      - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
+      - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
+      - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
+      - SETTINGS__STREAMING__HTTP_BASE=http://${STREAMING_HOST}:8880/avalon
+      - SETTINGS__STREAMING__SERVER=nginx
+      - SETTINGS__REDIS__HOST=avalonredis
+      - SETTINGS__REDIS__PORT=6379
+      - DATABASE_URL=postgres://postgres:${AVALON_DB_PASSWORD}@srv-pgsql/avalon
       - ENCODE_WORK_DIR=/streamfiles
       - FEDORA_BASE_PATH
-      - FEDORA_NAMESPACE=avalon
-      - FEDORA_URL=http://srv-fedora:9000/fedora/rest
-      - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
+      - FEDORA_NAMESPACE
+      - FEDORA_URL
       - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
-      - MATTERHORN_URL=http://matterhorn_system_account:CHANGE_ME@matterhorn:8080/
       - MEDIAINFO_PATH=/usr/bin/mediainfo
       - RAILS_ENV=production
-      - SETTINGS__REDIS__HOST=redis
-      - SETTINGS__REDIS__PORT=6379
       - SMTP_ADDRESS
       - SMTP_AUTHENTICATION
-      - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SMTP_DOMAIN
       - SMTP_ENABLE_STARTTLS_AUTO
       - SMTP_OPENSSL_VERIFY_MODE
@@ -104,14 +110,19 @@ services:
       - SMTP_PORT
       - SMTP_USER_NAME
       - SOLR_URL=http://solr:8983/solr/avalon
-      - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
-      - SETTINGS__STREAMING__HTTP_BASE=http://${STREAMING_HOST}:8880/avalon
-      - SETTINGS__STREAMING__SERVER=nginx
       - SYSTEM_GROUPS=administrator,group_manager,manager
       - Z3950_ATTRIBUTE
       - Z3950_DATABASE
       - Z3950_HOST
       - Z3950_PORT
+      - env_fedora_namespace
+      - env_fedora_password
+      - env_fedora_port
+      - env_fedora_url
+      - env_fedora_user
+      - env_ldap_password
+      - env_ldap_user
+      - env_redis_host      
     volumes:
       - ./masterfiles:/masterfiles
       - ./gems:/gems
