@@ -18,14 +18,22 @@ touch /var/spool/cron/crontabs/app
 chown -R root:1002 /mnt/avalon_dev/masterfiles/
 chmod -R 0777 /mnt/avalon_dev/masterfiles/
 
+chown -R root:1002 /mnt/avalon_dev/ingest/
+chmod -R 0777 /mnt/avalon_dev/ingest/
+
+chmod -R 0777 /mnt/avalon_dev/dropbox
+chown -R root:1002 /mnt/avalon_dev/dropbox
+
 chmod -R 0777 /mnt/avalon_dev/new_home/app/avalon/tmp
 chown -R root:1002 /mnt/avalon_dev/new_home/app/avalon/tmp
 
-echo "* * * * * /bin/bash -l -c '/mnt/avalon_dev/dropbox_rights.sh' >/dev/null 2>&1" >> /var/spool/cron/crontabs/root
+echo "* * * * * /bin/bash -l -c '/mnt/avalon_dev/master_rights.sh' >/dev/null 2>&1" >> /var/spool/cron/crontabs/root
 echo "* * * * * /bin/bash -l -c '/mnt/avalon_dev/ingest_rights.sh' >/dev/null 2>&1" >> /var/spool/cron/crontabs/root
+echo "* * * * * /bin/bash -l -c '/mnt/avalon_dev/dropbox_rights.sh' >/dev/null 2>&1" >> /var/spool/cron/crontabs/root
+echo "* * * * * /bin/bash -l -c '/mnt/avalon_dev/tmp_rights.sh' >/dev/null 2>&1" >> /var/spool/cron/crontabs/root
 
 chmod 600 /var/spool/cron/crontabs/root
 service cron reload
 
 cd /home/app/avalon
-su -m -c "bundle exec rake db:migrate" app
+su -m -c "bundle exec rake db:migrate"
