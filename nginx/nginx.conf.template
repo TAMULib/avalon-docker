@@ -13,14 +13,14 @@ rtmp {
 
     application avalon {
       play /data;
-      on_play $AVALON_DOMAIN/authorize.txt;
+      on_play $env_rtmp_avalon_url/authorize.txt;
     }
   }
 }
   
 http {
   server {
-    listen $AVALON_STREAMING_PORT;
+    listen $env_avalon_streaming_port;
 
     # This URL provides RTMP statistics in XML
     location /stat {
@@ -49,14 +49,19 @@ http {
     open_file_cache_valid    2m;
     open_file_cache_min_uses 1;
     open_file_cache_errors   on;
-    
-    location /raw/ {
-      alias /data/;
-      autoindex on;
-    }
+ 
+## @Doug are you streaming from nginx?
+## If so I think adding these settings to the nginx config may help	
+    vod_hls_absolute_index_urls off;
+    vod_hls_absolute_master_urls off;
+ 
+#    location /raw/ {
+#      alias /data/;
+#      autoindex on;
+#    }
     
     location ~ ^/avalon/(?<stream>.+)/(?<resource>.+\.(?:m3u8|ts)) {
-      alias /data/$stream;
+      alias $env_master_file_location/$stream;
       vod hls;
 
       set $token "$arg_token";
@@ -75,8 +80,9 @@ http {
     }
 
     location = /auth {
-      resolver 127.0.0.1;
-      proxy_pass $AVALON_DOMAIN/authorize.txt?token=$token&name=$stream;
+#     resolver 127.0.0.1;
+#     For Rancher this is the clusterip for avalon under the service discovery tab
+      proxy_pass http://$env_proxy_pass_ip/authorize.txt?token=$token&name=$stream;
       proxy_pass_request_body off;
       proxy_set_header Content-Length "";
       proxy_set_header X-Original-URI $request_uri;

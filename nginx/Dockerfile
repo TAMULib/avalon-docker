@@ -30,12 +30,11 @@ RUN         mkdir -p /var/log/nginx && chown nginx /var/log/nginx
 ADD         stat.xsl  /etc/nginx/stat.xsl
 
 ADD         nginx.conf.template /etc/nginx/nginx.conf.template
-ADD         nginx.conf /etc/nginx/nginx.conf
 
 RUN         mkdir /etc/service/dnsmasq
 ADD         dnsmasq.sh /etc/service/dnsmasq/run
 RUN         chmod +x /etc/service/dnsmasq/run
 
 RUN         mkdir /etc/service/nginx
-ADD         nginx_new.sh /etc/service/nginx/run
+ADD         nginx.sh /etc/service/nginx/run
 RUN         chmod +x /etc/service/nginx/run
