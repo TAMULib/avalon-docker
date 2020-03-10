@@ -53,6 +53,11 @@ services:
     image: 10.55.134.48/avalon/nginx:${RANCHER_IMAGE_VERSION}
     build:
       context: ./nginx
+    environment:
+      - env_avalon_streaming_port
+      - env_master_file_location
+      - env_proxy_pass_ip
+      - env_rtmp_avalon_url    
     ports:
        - "8880:80"
        - "9080:80"
