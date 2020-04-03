@@ -34,6 +34,8 @@ services:
       - db
     volumes:
       - fedora:/data
+    ports:
+       - "8080:8080"
   solr:
     image: avalonmediasystem/solr:latest
     build:
@@ -95,13 +97,13 @@ services:
       - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
       - SETTINGS__STREAMING__HTTP_BASE=http://${STREAMING_HOST}:8880/avalon
       - SETTINGS__STREAMING__SERVER=nginx
-      - SETTINGS__REDIS__HOST=avalonredis
+      - SETTINGS__REDIS__HOST=redis
       - SETTINGS__REDIS__PORT=6379
       - DATABASE_URL=postgres://postgres:${AVALON_DB_PASSWORD}@srv-pgsql/avalon
       - ENCODE_WORK_DIR=/streamfiles
       - FEDORA_BASE_PATH
       - FEDORA_NAMESPACE
-      - FEDORA_URL
+      - FEDORA_URL=http://fedora:8080/fedora/rest/avalon/
       - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
       - MEDIAINFO_PATH=/usr/bin/mediainfo
@@ -127,7 +129,7 @@ services:
       - env_fedora_user
       - env_ldap_password
       - env_ldap_user
-      - env_redis_host      
+      - env_redis_host=redis     
     volumes:
       - ./masterfiles:/masterfiles
       - ./gems:/gems

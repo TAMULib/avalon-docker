@@ -32,11 +32,13 @@ RUN         git clone --branch=${AVALON_BRANCH} --depth=1 ${AVALON_REPO}
 ADD         Gemfile.local /home/app/avalon/
 ADD         config /home/app/avalon/config/
 ARG         RAILS_ENV=production
+
 RUN         cd avalon && \
               gem install bundler && \
               bundle config build.nokogiri --use-system-libraries && \
               bundle install --path=vendor/gems --with postgres --without development test profiling mysql && \
               cd ..
+			  
 ARG         BASE_URL
 ARG         DATABASE_URL
 
