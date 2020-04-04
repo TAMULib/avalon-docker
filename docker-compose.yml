@@ -66,16 +66,17 @@ services:
   redis:
     image: redis:alpine
   avalon: &avalon
-    hostname: avalon-dev
-    domainname: library.tamu.edu
-    image: 10.55.134.48/avalon/avalon:${RANCHER_IMAGE_VERSION}
+    container_name: ${AVALON_CONTAINER_NAME}  
+    image: ${VIC_SERVER}/avalon/${AVALON_CONTAINER_NAME}:${RANCHER_IMAGE_VERSION}
     build:
       context: ./avalon
       args:
-        - AVALON_BRANCH
-        - AVALON_REPO
-        - SECRET_KEY_BASE
-        - BASE_URL
+        AVALON_BRANCH: ${AVALON_BRANCH}  
+        AVALON_REPO: ${AVALON_REPO}  
+        AVALON_REPO_RAW: ${AVALON_REPO_RAW}  
+        SECRET_KEY_BASE: ${SECRET_KEY_BASE}  
+        BASE_URL: ${BASE_URL}
+        RAILS_ENV: ${RAILS_ENV}        
     depends_on:
       - db
       - fedora
@@ -83,15 +84,15 @@ services:
       - redis
     environment:
       - APP_NAME
-      - SECRET_KEY_BASE
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}  
       - ASSET_HOST
       - SETTINGS__DOMAIN
       - SETTINGS__DROPBOX__PATH=/masterfiles/dropbox
       - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles/dropbox
       - SETTINGS__ENCODING__WORKING_FILE_PATH=/masterfiles
-      - SETTINGS__EMAIL__COMMENTS
-      - SETTINGS__EMAIL__NOTIFICATION
-      - SETTINGS__EMAIL__SUPPORT      
+      - SETTINGS__EMAIL__COMMENTS=${EMAIL_COMMENTS}  
+      - SETTINGS__EMAIL__NOTIFICATION=${EMAIL_NOTIFICATION}  
+      - SETTINGS__EMAIL__SUPPORT=${EMAIL_SUPPORT}    
       - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
@@ -99,16 +100,16 @@ services:
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__REDIS__HOST=redis
       - SETTINGS__REDIS__PORT=6379
-      - DATABASE_URL=postgres://postgres:${AVALON_DB_PASSWORD}@srv-pgsql/avalon
+      - DATABASE_URL=${DATABASE_URL}
       - ENCODE_WORK_DIR=/streamfiles
       - FEDORA_BASE_PATH
       - FEDORA_NAMESPACE
-      - FEDORA_URL=http://fedora:8080/fedora/rest/avalon/
+      - FEDORA_URL=${FEDORA_URL}
       - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
       - MEDIAINFO_PATH=/usr/bin/mediainfo
-      - RAILS_ENV=production
-      - SMTP_ADDRESS
+      - RAILS_ENV=${RAILS_ENV}
+      - SMTP_ADDRESS=
       - SMTP_AUTHENTICATION
       - SMTP_DOMAIN
       - SMTP_ENABLE_STARTTLS_AUTO
@@ -116,17 +117,12 @@ services:
       - SMTP_PASSWORD
       - SMTP_PORT
       - SMTP_USER_NAME
-      - SOLR_URL=http://solr:8983/solr/avalon
+      - SOLR_URL=${SOLR_URL}
       - SYSTEM_GROUPS=administrator,group_manager,manager
       - Z3950_ATTRIBUTE
       - Z3950_DATABASE
       - Z3950_HOST
       - Z3950_PORT
-      - env_fedora_namespace
-      - env_fedora_password
-      - env_fedora_port
-      - env_fedora_url
-      - env_fedora_user
       - env_ldap_password
       - env_ldap_user
       - env_redis_host=redis     
@@ -138,5 +134,7 @@ services:
       - "3000:80"
   worker:
     <<: *avalon
-    command: su -m -c "cd /home/app/avalon && RAILS_ENV=production bundle exec sidekiq -C config/sidekiq.yml" app
+    command: su -m -c "cd /home/app/avalon && RAILS_ENV=${RAILS_ENV} bundle exec sidekiq -C config/sidekiq.yml" app
+    environment:
+      - RAILS_ENV=${RAILS_ENV}     
     ports: []
