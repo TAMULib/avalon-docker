@@ -12,6 +12,7 @@ networks:
   
 services:
   db:
+    container_name: ${DB_CONTAINER_NAME}  
     image: avalonmediasystem/db:fedora4
     build: ./db
     volumes:
@@ -20,8 +21,9 @@ services:
       - AVALON_DB_PASSWORD
       - FEDORA_DB_PASSWORD
       - PGDATA=/data
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
   fedora:
+    container_name: ${FEDORA_CONTAINER_NAME}  
     image: avalonmediasystem/fedora:4.7.5
     build:
       context: ./fedora
@@ -37,6 +39,7 @@ services:
     ports:
        - "8080:8080"
   solr:
+    container_name: ${SOLR_CONTAINER_NAME}
     image: avalonmediasystem/solr:latest
     build:
       context: ./solr
@@ -64,9 +67,10 @@ services:
        - "8880:80"
        - "9080:80"
   redis:
+    container_name: ${REDIS_CONTAINER_NAME} 
     image: redis:alpine
   avalon: &avalon
-    container_name: ${AVALON_CONTAINER_NAME}  
+    container_name: ${AVALON_CONTAINER_NAME} 
     image: ${VIC_SERVER}/avalon/${AVALON_CONTAINER_NAME}:${RANCHER_IMAGE_VERSION}
     build:
       context: ./avalon
@@ -76,14 +80,23 @@ services:
         AVALON_REPO_RAW: ${AVALON_REPO_RAW}  
         SECRET_KEY_BASE: ${SECRET_KEY_BASE}  
         BASE_URL: ${BASE_URL}
-        RAILS_ENV: ${RAILS_ENV}        
+        RAILS_ENV: ${RAILS_ENV}  
+        EMAIL_NOTIFICATION: ${EMAIL_NOTIFICATION}   
+        APP_NAME: ${APP_NAME}   
+        EMAIL_SUPPORT: ${EMAIL_SUPPORT}   
+        EMAIL_COMMENTS: ${EMAIL_COMMENTS}   
+        SOLR_URL: ${SOLR_URL}   
+        DATABASE_URL: ${DATABASE_URL}          
+        FEDORA_URL: ${FEDORA_URL}   
+        REDIS_HOST: ${REDIS_HOST}    
+        STREAMING_HOST: ${STREAMING_HOST}          
     depends_on:
       - db
       - fedora
       - solr
       - redis
     environment:
-      - APP_NAME
+      - APP_NAME=${APP_NAME}  
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}  
       - ASSET_HOST
       - SETTINGS__DOMAIN
@@ -98,7 +111,7 @@ services:
       - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
       - SETTINGS__STREAMING__HTTP_BASE=http://${STREAMING_HOST}:8880/avalon
       - SETTINGS__STREAMING__SERVER=nginx
-      - SETTINGS__REDIS__HOST=redis
+      - SETTINGS__REDIS__HOST=${REDIS_HOST}
       - SETTINGS__REDIS__PORT=6379
       - DATABASE_URL=${DATABASE_URL}
       - ENCODE_WORK_DIR=/streamfiles
@@ -125,7 +138,7 @@ services:
       - Z3950_PORT
       - env_ldap_password
       - env_ldap_user
-      - env_redis_host=redis     
+      - env_redis_host=${REDIS_HOST}     
     volumes:
       - ./masterfiles:/masterfiles
       - ./gems:/gems
@@ -134,6 +147,7 @@ services:
       - "3000:80"
   worker:
     <<: *avalon
+    container_name: ${AVALON_CONTAINER_NAME}_worker 
     command: su -m -c "cd /home/app/avalon && RAILS_ENV=${RAILS_ENV} bundle exec sidekiq -C config/sidekiq.yml" app
     environment:
       - RAILS_ENV=${RAILS_ENV}     
