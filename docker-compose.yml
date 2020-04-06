@@ -18,8 +18,8 @@ services:
     volumes:
       - database:/data
     environment:
-      - AVALON_DB_PASSWORD
-      - FEDORA_DB_PASSWORD
+      - AVALON_DB_PASSWORD=${AVALON_DB_PASSWORD}
+      - FEDORA_DB_PASSWORD=${FEDORA_DB_PASSWORD}
       - PGDATA=/data
       - POSTGRES_USER=${POSTGRES_USER}
   fedora:
@@ -31,7 +31,7 @@ services:
         - FEDORA_VERSION=4.7.5
     environment:
       - FEDORA_DB_PASSWORD
-      - JAVA_OPTIONS=-Dfcrepo.postgresql.password=${FEDORA_DB_PASSWORD} -Dfcrepo.postgresql.username=fedora -Dfcrepo.postgresql.host=db -Dfcrepo.modeshape.configuration=classpath:/config/jdbc-postgresql/repository.json -Dfcrepo.home=/data
+      - JAVA_OPTIONS=-Dfcrepo.postgresql.password=${FEDORA_DB_PASSWORD} -Dfcrepo.postgresql.username=fedora -Dfcrepo.postgresql.host=${DB_CONTAINER_NAME} -Dfcrepo.modeshape.configuration=classpath:/config/jdbc-postgresql/repository.json -Dfcrepo.home=/data
     depends_on:
       - db
     volumes:
@@ -52,6 +52,8 @@ services:
       - solr-precreate
       - avalon
       - /opt/solr/avalon_conf
+    ports:
+       - "8983:8983"      
   hls:
     hostname: kaltura-dev
     domainname: library.tamu.edu
