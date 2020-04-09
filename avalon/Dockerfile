@@ -22,16 +22,17 @@ RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
             rm -f /etc/service/nginx/down && \
             ln -s /etc/nginx/sites-available/avalon /etc/nginx/sites-enabled/avalon && \
             chown app:docker_env /etc/container_environment.sh
-			
-ARG         AVALON_REPO=https://github.com/avalonmediasystem/avalon.git
-ARG         AVALON_BRANCH=master
+
+ARG         AVALON_REPO
+ARG         AVALON_BRANCH
 
 WORKDIR     /home/app
 USER        app
 RUN         git clone --branch=${AVALON_BRANCH} --depth=1 ${AVALON_REPO}
 ADD         Gemfile.local /home/app/avalon/
 ADD         config /home/app/avalon/config/
-ARG         RAILS_ENV=production
+
+ARG         RAILS_ENV
 
 RUN         cd avalon && \
               gem install bundler && \

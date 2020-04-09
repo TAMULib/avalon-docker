@@ -1,59 +1,10 @@
 version: '2'
 
-volumes:
-  streaming:
-  database:
-  fedora:
-  solr:
-
 networks:
   internal:
   external:
   
 services:
-  db:
-    container_name: ${DB_CONTAINER_NAME}  
-    image: avalonmediasystem/db:fedora4
-    build: ./db
-    volumes:
-      - database:/data
-    environment:
-      - AVALON_DB_PASSWORD=${AVALON_DB_PASSWORD}
-      - FEDORA_DB_PASSWORD=${FEDORA_DB_PASSWORD}
-      - PGDATA=/data
-      - POSTGRES_USER=${POSTGRES_USER}
-  fedora:
-    container_name: ${FEDORA_CONTAINER_NAME}  
-    image: avalonmediasystem/fedora:4.7.5
-    build:
-      context: ./fedora
-      args:
-        - FEDORA_VERSION=4.7.5
-    environment:
-      - FEDORA_DB_PASSWORD
-      - JAVA_OPTIONS=-Dfcrepo.postgresql.password=${FEDORA_DB_PASSWORD} -Dfcrepo.postgresql.username=fedora -Dfcrepo.postgresql.host=${DB_CONTAINER_NAME} -Dfcrepo.modeshape.configuration=classpath:/config/jdbc-postgresql/repository.json -Dfcrepo.home=/data
-    depends_on:
-      - db
-    volumes:
-      - fedora:/data
-    ports:
-       - "8080:8080"
-  solr:
-    container_name: ${SOLR_CONTAINER_NAME}
-    image: avalonmediasystem/solr:latest
-    build:
-      context: ./solr
-      args:
-        - AVALON_REPO_RAW
-    volumes:
-      - solr:/opt/solr/server/solr/mycores
-    entrypoint:
-      - docker-entrypoint.sh
-      - solr-precreate
-      - avalon
-      - /opt/solr/avalon_conf
-    ports:
-       - "8983:8983"      
   hls:
     hostname: kaltura-dev
     domainname: library.tamu.edu
@@ -79,23 +30,9 @@ services:
       args:
         AVALON_BRANCH: ${AVALON_BRANCH}  
         AVALON_REPO: ${AVALON_REPO}  
-        AVALON_REPO_RAW: ${AVALON_REPO_RAW}  
-        SECRET_KEY_BASE: ${SECRET_KEY_BASE}  
         BASE_URL: ${BASE_URL}
-        EMAIL_NOTIFICATION: ${EMAIL_NOTIFICATION}   
-        APP_NAME: ${APP_NAME}   
-        EMAIL_SUPPORT: ${EMAIL_SUPPORT}   
-        EMAIL_COMMENTS: ${EMAIL_COMMENTS}   
-        SOLR_URL: ${SOLR_URL}   
-        DATABASE_URL: ${DATABASE_URL}          
-        FEDORA_URL: ${FEDORA_URL}   
-        REDIS_HOST: ${REDIS_HOST}    
-        STREAMING_HOST: ${STREAMING_HOST}          
-    depends_on:
-      - db
-      - fedora
-      - solr
-      - redis
+        DATABASE_URL: ${DATABASE_URL} 
+        RAILS_ENV: ${RAILS_ENV}        
     environment:
       - APP_NAME=${APP_NAME}  
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}  
@@ -122,7 +59,7 @@ services:
       - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
       - MEDIAINFO_PATH=/usr/bin/mediainfo
-      - RAILS_ENV=prouction
+      - RAILS_ENV=production
       - SMTP_ADDRESS=
       - SMTP_AUTHENTICATION
       - SMTP_DOMAIN
@@ -143,13 +80,12 @@ services:
     volumes:
       - ./masterfiles:/masterfiles
       - ./gems:/gems
-      - streaming:/streamfiles
     ports:
       - "3000:80"
   worker:
     <<: *avalon
     container_name: ${AVALON_CONTAINER_NAME}_worker 
-    command: su -m -c "cd /home/app/avalon && RAILS_ENV=${RAILS_ENV} bundle exec sidekiq -C config/sidekiq.yml" app
+    command: su -m -c "cd /home/app/avalon && RAILS_ENV=production bundle exec sidekiq -C config/sidekiq.yml" app
     environment:
-      - RAILS_ENV=${RAILS_ENV}     
+      - RAILS_ENV=production  
     ports: []
