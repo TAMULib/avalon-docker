@@ -15,16 +15,23 @@ RUN         apt-get update && apt-get install -y \
             yarn \
             nodejs \
             imagemagick \
+	    dos2unix \
          && rm -rf /var/lib/apt/lists/* \
          && apt-get clean
+	
+ARG         CLIENT_MAX_BODY_SIZE=128m	
+COPY avalon_nginx.conf /etc/nginx/sites-available/avalon_nginx
+RUN sed -i s/{client_max_body_size}/${CLIENT_MAX_BODY_SIZE}/g /etc/nginx/sites-available/avalon_nginx
+RUN chmod 0755 /etc/nginx/sites-available/avalon_nginx
+
 RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
             rm /etc/nginx/sites-enabled/default && \
             rm -f /etc/service/nginx/down && \
             ln -s /etc/nginx/sites-available/avalon /etc/nginx/sites-enabled/avalon && \
             chown app:docker_env /etc/container_environment.sh
 
-ARG         AVALON_REPO
-ARG         AVALON_BRANCH
+ARG         AVALON_REPO=https://github.com/TAMULib/avalon.git
+ARG         AVALON_BRANCH=master
 
 WORKDIR     /home/app
 USER        app
@@ -32,7 +39,7 @@ RUN         git clone --branch=${AVALON_BRANCH} --depth=1 ${AVALON_REPO}
 ADD         Gemfile.local /home/app/avalon/
 ADD         config /home/app/avalon/config/
 
-ARG         RAILS_ENV
+ARG         RAILS_ENV=production
 
 RUN         cd avalon && \
               gem install bundler && \
@@ -45,16 +52,22 @@ ARG         DATABASE_URL
 
 RUN         cd avalon \
 			&& bundle exec whenever -w -f config/docker_schedule.rb 
-		 
-RUN 		cd avalon \
-			&& bundle exec rake assets:precompile SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)') 
+			
+RUN         cd avalon \			
+			&& bundle exec rake assets:precompile SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)')
 			
 USER        root
 RUN         chown -R app:app /home/app/avalon
+
 ADD         ./avalon.conf /etc/nginx/sites-available/avalon
 ADD         ./nginx_env.conf /etc/nginx/main.d/env.conf
-
 ADD         rails_init.sh /etc/my_init.d/30_rails_init.sh
+
+USER        root
+RUN 		dos2unix /etc/my_init.d/30_rails_init.sh
+USER        root
+RUN 		dos2unix /etc/container_environment.sh
 
 RUN         mkdir /streamfiles && chmod 0777 /streamfiles
 VOLUME      /streamfiles
+

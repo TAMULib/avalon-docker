@@ -1,24 +1,60 @@
 version: '2'
 
-networks:
-  internal:
-  external:
-  
+volumes:
+  streaming:
+  database:
+  fedora:
+  solr:
+
 services:
+  db:
+    image: avalonmediasystem/db:fedora4
+    build: ./db
+    volumes:
+      - database:/data
+    environment:
+      - AVALON_DB_PASSWORD
+      - FEDORA_DB_PASSWORD
+      - PGDATA=/data
+      - POSTGRES_USER=postgres
+  fedora:
+    image: avalonmediasystem/fedora:4.7.5
+    build:
+      context: ./fedora
+      args:
+        - FEDORA_VERSION=4.7.5
+    environment:
+      - FEDORA_DB_PASSWORD
+      - JAVA_OPTIONS=-Dfcrepo.postgresql.password=${FEDORA_DB_PASSWORD} -Dfcrepo.postgresql.username=fedora -Dfcrepo.postgresql.host=db -Dfcrepo.modeshape.configuration=classpath:/config/jdbc-postgresql/repository.json -Dfcrepo.home=/data
+    depends_on:
+      - db
+    volumes:
+      - fedora:/data
+  solr:
+    image: avalonmediasystem/solr:latest
+    build:
+      context: ./solr
+      args:
+        - AVALON_BRANCH
+        - AVALON_REPO
+        - AVALON_REPO_RAW
+    volumes:
+      - solr:/opt/solr/server/solr/mycores
+    entrypoint:
+      - docker-entrypoint.sh
+      - solr-precreate
+      - avalon
+      - /opt/solr/avalon_conf
   hls:
     hostname: kaltura-dev
     domainname: library.tamu.edu
     image: 10.55.134.48/avalon/nginx:${RANCHER_IMAGE_VERSION}
     build:
       context: ./nginx
-    environment:
-      - env_avalon_streaming_port
-      - env_master_file_location
-      - env_proxy_pass_ip
-      - env_rtmp_avalon_url    
+    volumes:
+      - streaming:/data
     ports:
        - "8880:80"
-       - "9080:80"
   redis:
     container_name: ${REDIS_CONTAINER_NAME} 
     image: redis:alpine
@@ -28,47 +64,53 @@ services:
     build:
       context: ./avalon
       args:
-        AVALON_BRANCH: ${AVALON_BRANCH}  
-        AVALON_REPO: ${AVALON_REPO}  
-        BASE_URL: ${BASE_URL}
-        DATABASE_URL: ${DATABASE_URL} 
-        RAILS_ENV: ${RAILS_ENV}        
+        - AVALON_BRANCH
+        - AVALON_REPO        
+        - SECRET_KEY_BASE
+        - BASE_URL
+        - RAILS_ENV
+    depends_on:
+      - db
+      - fedora
+      - solr
+      - redis
     environment:
-      - APP_NAME=${APP_NAME}  
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE}  
+      - APP_NAME
+      - SECRET_KEY_BASE
       - ASSET_HOST
       - SETTINGS__DOMAIN
+      - DATABASE_URL=postgres://avalon:${AVALON_DB_PASSWORD}@db/avalon
       - SETTINGS__DROPBOX__PATH=/masterfiles/dropbox
       - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles/dropbox
       - SETTINGS__ENCODING__WORKING_FILE_PATH=/masterfiles
-      - SETTINGS__EMAIL__COMMENTS=${EMAIL_COMMENTS}  
-      - SETTINGS__EMAIL__NOTIFICATION=${EMAIL_NOTIFICATION}  
-      - SETTINGS__EMAIL__SUPPORT=${EMAIL_SUPPORT}    
-      - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
-      - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
-      - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
-      - SETTINGS__STREAMING__HTTP_BASE=http://${STREAMING_HOST}:8880/avalon
-      - SETTINGS__STREAMING__SERVER=nginx
-      - SETTINGS__REDIS__HOST=${REDIS_HOST}
-      - SETTINGS__REDIS__PORT=6379
-      - DATABASE_URL=${DATABASE_URL}
+      - SETTINGS__EMAIL__COMMENTS
+      - SETTINGS__EMAIL__NOTIFICATION
+      - SETTINGS__EMAIL__SUPPORT
       - ENCODE_WORK_DIR=/streamfiles
       - FEDORA_BASE_PATH
-      - FEDORA_NAMESPACE
-      - FEDORA_URL=${FEDORA_URL}
+      - FEDORA_NAMESPACE=avalon
+      - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
+      - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
+      - MATTERHORN_URL=http://matterhorn_system_account:CHANGE_ME@matterhorn:8080/
       - MEDIAINFO_PATH=/usr/bin/mediainfo
       - RAILS_ENV=production
-      - SMTP_ADDRESS=
+      - SETTINGS__REDIS__HOST=redis
+      - SETTINGS__REDIS__PORT=6379
+      - SMTP_ADDRESS
       - SMTP_AUTHENTICATION
+      - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SMTP_DOMAIN
       - SMTP_ENABLE_STARTTLS_AUTO
       - SMTP_OPENSSL_VERIFY_MODE
       - SMTP_PASSWORD
       - SMTP_PORT
       - SMTP_USER_NAME
-      - SOLR_URL=${SOLR_URL}
+      - SOLR_URL=http://solr:8983/solr/avalon
+      - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
+      - SETTINGS__STREAMING__HTTP_BASE=http://${STREAMING_HOST}:8880/avalon
+      - SETTINGS__STREAMING__SERVER=nginx
       - SYSTEM_GROUPS=administrator,group_manager,manager
       - Z3950_ATTRIBUTE
       - Z3950_DATABASE
