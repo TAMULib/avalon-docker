@@ -1,4 +1,4 @@
-FROM        phusion/baseimage:master-amd64
+FROM        phusion/baseimage:0.11
 MAINTAINER  Michael B. Klein <michael.klein@northwestern.edu>
 
 RUN         apt-get update && apt-get upgrade -y
@@ -6,10 +6,12 @@ RUN         apt-get install -y mediainfo ffmpeg x264
 RUN         apt-get install -y build-essential git libpcre3-dev zlib1g-dev libssl-dev dnsmasq
 # gettext-base provides 'envsubst', used by nginx.sh
 RUN         apt-get install -y gettext-base
+RUN         apt-get install -y dos2unix
 
 RUN         apt-get clean
-
 ADD         build-nginx.sh /usr/src/build-nginx.sh
+RUN 		dos2unix /usr/src/build-nginx.sh
+
 RUN         /usr/src/build-nginx.sh
 
 EXPOSE      1935
@@ -23,6 +25,9 @@ ADD         stat.xsl  /etc/nginx/stat.xsl
 ADD         nginx.conf.template /etc/nginx/nginx.conf.template
 RUN         mkdir /etc/service/dnsmasq
 ADD         dnsmasq.sh /etc/service/dnsmasq/run
+RUN 		dos2unix /etc/service/dnsmasq/run
+
 RUN         mkdir /etc/service/nginx
 ADD         nginx.sh /etc/service/nginx/run
+RUN 		dos2unix /etc/service/nginx/run
 RUN         chmod +x /etc/service/nginx/run

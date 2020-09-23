@@ -13,14 +13,14 @@ rtmp {
 
     application avalon {
       play /data;
-      on_play $AVALON_DOMAIN/authorize.txt;
+      on_play $env_rtmp_avalon_url/authorize.txt;
     }
   }
 }
   
 http {
   server {
-    listen $AVALON_STREAMING_PORT;
+    listen $env_avalon_streaming_port;
 
     # This URL provides RTMP statistics in XML
     location /stat {
@@ -61,7 +61,7 @@ http {
 #    }
     
     location ~ ^/avalon/(?<stream>.+)/(?<resource>.+\.(?:m3u8|ts)) {
-      alias /data/$stream;
+      alias $env_master_file_location/$stream;
       vod hls;
 
       set $token "$arg_token";
