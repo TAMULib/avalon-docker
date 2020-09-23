@@ -1,18 +1,54 @@
-# Required Settings
-APP_NAME=avalon
-AVALON_BRANCH=master
-SETTINGS__DOMAIN=http://localhost:8888/
-STREAMING_HOST=localhost
-AVALON_DB_PASSWORD=
-FEDORA_DB_PASSWORD=
-SECRET_KEY_BASE=
+#Docker Settings
+RANCHER_IMAGE_VERSION=0.3.3
+AVALON_CONTAINER_NAME=avalon
+REDIS_CONTAINER_NAME=avalon_redis
+VIC_SERVER=10.55.134.48
 
-# Recommended Settings
-EMAIL_COMMENTS=avalon-comments@example.edu
-EMAIL_NOTIFICATION=avalon-notifications@example.edu
-EMAIL_SUPPORT=avalon-support@example.edu
-SMTP_ADDRESS=smtp.example.edu
-SMTP_PORT=587
+#
+# Redis Settings
+# REDIS_HOST needs to match REDIS_CONTAINER_NAME
+
+REDIS_HOST=avalon_redis
+
+#
+# Database Settings
+#
+
+POSTGRES_USER=postgres
+AVALON_DB_PASSWORD=
+
+#
+# Avalon Application settings
+#
+APP_NAME=avalon
+
+RAILS_ENV=production
+
+DATABASE_URL=postgres://postgres:PUTAVALON_DB_PASSWORDHERE@db/avalon
+SOLR_URL=http://solr:8983/solr/avalon
+FEDORA_URL=http://fedora:8080/fedora/rest/avalon
+FEDORA_DB_PASSWORD=
+
+SECRET_KEY_BASE=
+AVALON_BRANCH=tamu_master
+AVALON_REPO=https://github.com/TAMULib/avalon.git
+AVALON_REPO_RAW=https://raw.githubusercontent.com/TAMULib/avalon/
+AVALON_HOSTNAME=localhost
+
+SETTINGS__DOMAIN=http://localhost:3000/
+STREAMING_HOST=localhost
+
+BASE_URL=http://localhost:3000/
+CLIENT_MAX_BODY_SIZE=2050m
+
+LDAP_USER=
+LDAP_PASSWORD=
+
+EMAIL_COMMENTS=
+EMAIL_NOTIFICATION=
+EMAIL_SUPPORT=
+SMTP_ADDRESS=
+SMTP_PORT=25
 
 # Optional Settings
 # Z3950_HOST=
