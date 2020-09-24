@@ -18,7 +18,7 @@ RUN         apt-get update && apt-get install -y \
 	    dos2unix \
          && rm -rf /var/lib/apt/lists/* \
          && apt-get clean
-	
+
 ARG         CLIENT_MAX_BODY_SIZE=128m	
 COPY avalon_nginx.conf /etc/nginx/sites-available/avalon_nginx
 RUN sed -i s/{client_max_body_size}/${CLIENT_MAX_BODY_SIZE}/g /etc/nginx/sites-available/avalon_nginx
@@ -31,7 +31,7 @@ RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
             chown app:docker_env /etc/container_environment.sh
 
 ARG         AVALON_REPO=https://github.com/TAMULib/avalon.git
-ARG         AVALON_BRANCH=master
+ARG         AVALON_BRANCH=tamu_development
 
 WORKDIR     /home/app
 USER        app
@@ -55,9 +55,12 @@ RUN         cd avalon \
 			
 RUN         cd avalon \			
 			&& bundle exec rake assets:precompile SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)')
-			
+
+
+# This takes forever so add ability to disable while testing build
+ARG DISABLE_CHANGE_OWNER_FOR_TEST
 USER        root
-RUN         chown -R app:app /home/app/avalon
+RUN if [ "$DISABLE_CHANGE_OWNER_FOR_TEST" != "true" ] ; then chown -R app:app /home/app/avalon ; fi
 
 ADD         ./avalon.conf /etc/nginx/sites-available/avalon
 ADD         ./nginx_env.conf /etc/nginx/main.d/env.conf

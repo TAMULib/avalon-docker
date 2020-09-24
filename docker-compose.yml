@@ -79,7 +79,9 @@ services:
         - AVALON_REPO        
         - BASE_URL
         - RAILS_ENV
-        - SECRET_KEY_BASE        
+        - SECRET_KEY_BASE   
+        - DISABLE_CHANGE_OWNER_FOR_TEST       
+        - CLIENT_MAX_BODY_SIZE=${CLIENT_MAX_BODY_SIZE}            
     depends_on:
       - db
       - fedora
