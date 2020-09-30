@@ -14,9 +14,12 @@ services:
       - database:/data
     environment:
       - AVALON_DB_PASSWORD=${AVALON_DB_PASSWORD}
+      - AVALON_DB_USER=${AVALON_DB_USER}      
       - FEDORA_DB_PASSWORD=${FEDORA_DB_PASSWORD}
+      - FEDORA_DB_USER=${FEDORA_DB_USER}      
       - PGDATA=/data
       - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
        - "5432:5432"        
   fedora:

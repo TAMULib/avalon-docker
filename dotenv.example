@@ -1,8 +1,10 @@
 #Docker Settings
-RANCHER_IMAGE_VERSION=0.3.3
+RANCHER_IMAGE_VERSION=7.1.1
 AVALON_CONTAINER_NAME=avalon
 REDIS_CONTAINER_NAME=avalon_redis
 VIC_SERVER=10.55.134.48
+
+DISABLE_CHANGE_OWNER_FOR_TEST=false
 
 #
 # Redis Settings
@@ -15,7 +17,13 @@ REDIS_HOST=avalon_redis
 #
 
 POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+
+AVALON_DB_USER=
 AVALON_DB_PASSWORD=
+
+FEDORA_DB_USER=
+FEDORA_DB_PASSWORD=
 
 #
 # Avalon Application settings
@@ -24,10 +32,9 @@ APP_NAME=avalon
 
 RAILS_ENV=production
 
-DATABASE_URL=postgres://postgres:PUTAVALON_DB_PASSWORDHERE@db/avalon
+DATABASE_URL=postgres://postgres:password@db/avalon
 SOLR_URL=http://solr:8983/solr/avalon
 FEDORA_URL=http://fedora:8080/fedora/rest/avalon
-FEDORA_DB_PASSWORD=
 
 SECRET_KEY_BASE=
 AVALON_BRANCH=tamu_master
