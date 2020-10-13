@@ -14,8 +14,6 @@ services:
       - PGDATA=/data
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    ports:
-       - "5432:5432"        
   fedora:
     image: avalonmediasystem/fedora:4.7.5
     build:
@@ -49,6 +47,7 @@ services:
     ports:
        - "8983:8983"      
   hls:
+    container_name: ${NGINX_CONTAINER_NAME}   
     hostname: localhost:8880
     image: 10.55.134.48/avalon/nginx:${RANCHER_IMAGE_VERSION}
     build:
@@ -159,6 +158,5 @@ services:
       - env_streaming_content_path=/mnt/avalon/masterfiles     
     volumes:
       - ./data/masterfiles:/mnt/avalon/masterfiles
-      - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
     ports: []

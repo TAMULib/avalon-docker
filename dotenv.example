@@ -2,9 +2,8 @@
 RANCHER_IMAGE_VERSION=7.1.1
 AVALON_CONTAINER_NAME=avalon
 REDIS_CONTAINER_NAME=avalon_redis
+NGINX_CONTAINER_NAME=avalon_nginx
 VIC_SERVER=10.55.134.48
-
-DISABLE_CHANGE_OWNER_FOR_TEST=false
 
 #
 # Redis Settings
@@ -19,11 +18,11 @@ REDIS_HOST=avalon_redis
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=password
 
-AVALON_DB_USER=
-AVALON_DB_PASSWORD=
+AVALON_DB_USER=avalon
+AVALON_DB_PASSWORD=password
 
-FEDORA_DB_USER=
-FEDORA_DB_PASSWORD=
+FEDORA_DB_USER=fedora
+FEDORA_DB_PASSWORD=password
 
 #
 # Avalon Application settings
@@ -34,28 +33,39 @@ RAILS_ENV=production
 
 DATABASE_URL=postgres://postgres:password@db/avalon
 SOLR_URL=http://solr:8983/solr/avalon
-FEDORA_URL=http://fedora:8080/fedora/rest/avalon
+FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest/avalon
 
-SECRET_KEY_BASE=
+FEDORA_USER=fedoraAdmin
+FEDORA_PASSWORD=fedoraAdmin
+FEDORA_HOST=fedora
+FEDORA_PORT=8080
+FEDORA_NAMESPACE=avalon
+
+SOLR_HOST=solr
+SOLR_PORT=8983
+SOLR_BASE_PATH=avalon
+
+SECRET_KEY_BASE=aaaa
 AVALON_BRANCH=tamu_master
 AVALON_REPO=https://github.com/TAMULib/avalon.git
 AVALON_REPO_RAW=https://raw.githubusercontent.com/TAMULib/avalon/
 AVALON_HOSTNAME=localhost
 
-SETTINGS__DOMAIN=http://localhost:3000/
-STREAMING_HOST=localhost
-
-BASE_URL=http://localhost:3000/
 CLIENT_MAX_BODY_SIZE=2050m
 
 LDAP_USER=
 LDAP_PASSWORD=
 
-EMAIL_COMMENTS=
-EMAIL_NOTIFICATION=
-EMAIL_SUPPORT=
-SMTP_ADDRESS=
+EMAIL_COMMENTS=someone@anywhere.com
+EMAIL_NOTIFICATION=someone@anywhere.com
+EMAIL_SUPPORT=someone@anywhere.com
+SMTP_ADDRESS=relay.tamu.edu
 SMTP_PORT=25
+
+# This is the hostname that Kaltura / nginx can get to
+# so for local docker it is the avalon container name.
+RTMP_AVALON_URL=http://avalon
+
 
 # Optional Settings
 # Z3950_HOST=
