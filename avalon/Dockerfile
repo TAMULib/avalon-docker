@@ -21,7 +21,7 @@ RUN         apt-get update && apt-get install -y \
 
 ARG         CLIENT_MAX_BODY_SIZE=128m	
 COPY avalon_nginx.conf /etc/nginx/sites-available/avalon_nginx
-RUN sed -i s/{client_max_body_size}/${CLIENT_MAX_BODY_SIZE}/g /etc/nginx/sites-available/avalon_nginx
+RUN sed -i s/{{client_max_body_size}}/${CLIENT_MAX_BODY_SIZE}/g /etc/nginx/sites-available/avalon_nginx
 RUN chmod 0755 /etc/nginx/sites-available/avalon_nginx
 
 RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
@@ -46,9 +46,6 @@ RUN         cd avalon && \
               bundle config build.nokogiri --use-system-libraries && \
               bundle install --path=vendor/gems --with postgres --without development test profiling mysql && \
               cd ..
-			  
-ARG         BASE_URL
-ARG         DATABASE_URL
 
 RUN         cd avalon \
 			&& bundle exec whenever -w -f config/docker_schedule.rb 
@@ -57,10 +54,33 @@ RUN         cd avalon \
 			&& bundle exec rake assets:precompile SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)')
 
 
-# This takes forever so add ability to disable while testing build
-ARG DISABLE_CHANGE_OWNER_FOR_TEST
 USER        root
-RUN if [ "$DISABLE_CHANGE_OWNER_FOR_TEST" != "true" ] ; then chown -R app:app /home/app/avalon ; fi
+RUN chown -R app:app /home/app/avalon
+
+###
+# Ensure Configurations are set both .YML
+###
+ARG SOLR_HOST_YML
+ARG SOLR_PORT_YML
+ARG SOLR_BASE_PATH_YML
+
+RUN sed -i s/{{SOLR_HOST_YML}}/${SOLR_HOST}/g  /home/app/avalon/config/solr.yml
+RUN sed -i s/{{SOLR_PORT_YML}}/${SOLR_PORT}/g  /home/app/avalon/config/solr.yml
+RUN sed -i s/{{SOLR_BASE_PATH_YML}}/${SOLR_BASE_PATH}/g  /home/app/avalon/config/solr.yml
+
+ARG FEDORA_HOST_YML
+ARG FEDORA_PORT_YML
+ARG FEDORA_BASE_PATH_YML
+ARG FEDORA_USER_YML
+ARG FEDORA_PASSWORD_YML
+
+RUN sed -i s/{{FEDORA_HOST_YML}}/${FEDORA_HOST_YML}/g  /home/app/avalon/config/fedora.yml
+RUN sed -i s/{{FEDORA_PORT_YML}}/${FEDORA_PORT_YML}/g  /home/app/avalon/config/fedora.yml
+RUN sed -i s/{{FEDORA_BASE_PATH_YML}}/${FEDORA_BASE_PATH_YML}/g  /home/app/avalon/config/fedora.yml
+RUN sed -i s/{{FEDORA_USER_YML}}/${FEDORA_USER_YML}/g  /home/app/avalon/config/fedora.yml
+RUN sed -i s/{{FEDORA_PASSWORD_YML}}/${FEDORA_PASSWORD_YML}/g  /home/app/avalon/config/fedora.yml
+
+###
 
 ADD         ./avalon.conf /etc/nginx/sites-available/avalon
 ADD         ./nginx_env.conf /etc/nginx/main.d/env.conf

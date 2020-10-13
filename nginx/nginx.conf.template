@@ -12,7 +12,7 @@ rtmp {
     chunk_size 4000;
 
     application avalon {
-      play /data;
+      play $env_master_file_location;
       on_play $env_rtmp_avalon_url/authorize.txt;
     }
   }
@@ -55,10 +55,10 @@ http {
     vod_hls_absolute_index_urls off;
     vod_hls_absolute_master_urls off;
  
-#    location /raw/ {
-#      alias /data/;
-#      autoindex on;
-#    }
+ #   location /raw/ {
+ #     alias $env_master_file_location/;
+ #     autoindex on;
+ #   }
     
     location ~ ^/avalon/(?<stream>.+)/(?<resource>.+\.(?:m3u8|ts)) {
       alias $env_master_file_location/$stream;
@@ -80,7 +80,7 @@ http {
     }
 
     location = /auth {
-#     resolver 127.0.0.1;
+     resolver 127.0.0.1;
 #     For Rancher this is the clusterip for avalon under the service discovery tab
       proxy_pass http://$env_proxy_pass_ip/authorize.txt?token=$token&name=$stream;
       proxy_pass_request_body off;

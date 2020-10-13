@@ -1,17 +1,11 @@
 version: '2'
 
-volumes:
-  streaming:
-  database:
-  fedora:
-  solr:
-
 services:
   db:
     image: avalonmediasystem/db:fedora4
     build: ./db
     volumes:
-      - database:/data
+      - ./data/database:/data
     environment:
       - AVALON_DB_PASSWORD=${AVALON_DB_PASSWORD}
       - AVALON_DB_USER=${AVALON_DB_USER}      
@@ -34,7 +28,7 @@ services:
     depends_on:
       - db
     volumes:
-      - fedora:/data
+      - ./data/fedora:/data
     ports:
        - "8080:8080"      
   solr:
@@ -46,7 +40,7 @@ services:
         - AVALON_REPO
         - AVALON_REPO_RAW
     volumes:
-      - solr:/opt/solr/server/solr/mycores
+      - ./data/solr:/opt/solr/server/solr/mycores      
     entrypoint:
       - docker-entrypoint.sh
       - solr-precreate
@@ -55,20 +49,19 @@ services:
     ports:
        - "8983:8983"      
   hls:
-    hostname: kaltura
-    domainname: library.tamu.edu
+    hostname: localhost:8880
     image: 10.55.134.48/avalon/nginx:${RANCHER_IMAGE_VERSION}
     build:
       context: ./nginx
     volumes:
-      - streaming:/data
+      - ./data/masterfiles:/mnt/avalon/masterfiles  
     environment:
-      - env_rtmp_avalon_url=http://avalon
-      - env_avalon_streaming_port=80
-      - env_master_file_location=/data
-      - env_proxy_pass_ip=127.0.0.1
+      - env_rtmp_avalon_url=${RTMP_AVALON_URL}
+      - env_avalon_streaming_port=8880
+      - env_master_file_location=/mnt/avalon/masterfiles
+      - env_proxy_pass_ip=avalon
     ports:
-       - "8880:80"
+       - "8880:8880"
   redis:
     container_name: ${REDIS_CONTAINER_NAME} 
     image: redis:alpine
@@ -80,11 +73,17 @@ services:
       args:
         - AVALON_BRANCH
         - AVALON_REPO        
-        - BASE_URL
         - RAILS_ENV
         - SECRET_KEY_BASE   
-        - DISABLE_CHANGE_OWNER_FOR_TEST       
-        - CLIENT_MAX_BODY_SIZE=${CLIENT_MAX_BODY_SIZE}            
+        - CLIENT_MAX_BODY_SIZE=${CLIENT_MAX_BODY_SIZE}  
+        - SOLR_HOST_YML=${SOLR_HOST}  
+        - SOLR_PORT_YML=${SOLR_PORT}  
+        - SOLR_BASE_PATH_YML=${SOLR_BASE_PATH}       
+        - FEDORA_HOST_YML=${FEDORA_HOST}  
+        - FEDORA_PORT_YML=${FEDORA_PORT}  
+        - FEDORA_BASE_PATH_YML=${FEDORA_NAMESPACE}  
+        - FEDORA_USER_YML=${FEDORA_USER}  
+        - FEDORA_PASSWORD_YML=${FEDORA_PASSWORD}       
     depends_on:
       - db
       - fedora
@@ -94,26 +93,15 @@ services:
       - APP_NAME
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - ASSET_HOST
-      - SETTINGS__DOMAIN
       - DATABASE_URL=${DATABASE_URL}
-      - SETTINGS__DROPBOX__PATH=/masterfiles/dropbox
-      - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles/dropbox
-      - SETTINGS__ENCODING__WORKING_FILE_PATH=/masterfiles
-      - SETTINGS__EMAIL__COMMENTS=${EMAIL_COMMENTS}
-      - SETTINGS__EMAIL__NOTIFICATION=${EMAIL_NOTIFICATION}
-      - SETTINGS__EMAIL__SUPPORT=${EMAIL_SUPPORT}
-      - ENCODE_WORK_DIR=/streamfiles
+      - ENCODE_WORK_DIR=/mnt/avalon/masterfiles
       - FEDORA_BASE_PATH
       - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=${FEDORA_URL}
-      - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
-      - MATTERHORN_URL=http://matterhorn_system_account:CHANGE_ME@matterhorn:8080/
       - MEDIAINFO_PATH=/usr/bin/mediainfo
       - RAILS_ENV=${RAILS_ENV}
-      - SETTINGS__REDIS__HOST=${REDIS_HOST}
-      - SETTINGS__REDIS__PORT=6379
       - SMTP_ADDRESS
       - SMTP_AUTHENTICATION
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
@@ -124,9 +112,6 @@ services:
       - SMTP_PORT
       - SMTP_USER_NAME
       - SOLR_URL=${SOLR_URL}
-      - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
-      - SETTINGS__STREAMING__HTTP_BASE=http://${STREAMING_HOST}:8880/avalon
-      - SETTINGS__STREAMING__SERVER=nginx
       - SYSTEM_GROUPS=administrator,group_manager,manager
       - Z3950_ATTRIBUTE
       - Z3950_DATABASE
@@ -134,10 +119,26 @@ services:
       - Z3950_PORT
       - env_ldap_password=${LDAP_PASSWORD}  
       - env_ldap_user=${LDAP_USER}  
-      - env_redis_host=${REDIS_HOST}     
+      - env_redis_host=${REDIS_HOST}   
+      - env_redis_port=6379        
+      - env_avalon_hostname=localhost  
+      - env_avalon_port=3000
+      - env_avalon_protocol=http
+      - env_dropbox_path=/mnt/avalon/dropbox
+      - env_dropbox_upload_uri=\\cifs.library.tamu.edu/avalon/dropbox/
+      - env_encoding_working_file_path=/mnt/avalon/ingest  
+      - env_email_comments=dhahn@library.tamu.edu
+      - env_email_notification=dhahn@library.tamu.edu
+      - env_email_support=dhahn@library.tamu.edu
+      - env_timeliner_url=http://localhost:3000/timeliner      
+      - env_streaming_http_base=http://localhost:8880/avalon
+      - env_streaming_rtmp_base=rtmp://localhost:8880/avalon
+      - env_streaming_content_path=/mnt/avalon/masterfiles    
     volumes:
-      - ./masterfiles:/masterfiles
-      - ./gems:/gems
+      - ./data/masterfiles:/mnt/avalon/masterfiles
+      - ./data/dropbox:/mnt/avalon/dropbox   
+      - ./data/dropbox:/mnt/avalon/ingest         
+      - ./data/gems:/gems
     ports:
       - "3000:80"
   worker:
@@ -145,9 +146,15 @@ services:
     container_name: ${AVALON_CONTAINER_NAME}_worker 
     command: su -m -c "cd /home/app/avalon && RAILS_ENV=${RAILS_ENV} bundle exec sidekiq -C config/sidekiq.yml" app
     environment:
-      - SETTINGS__REDIS__HOST=${REDIS_HOST}
-      - SETTINGS__REDIS__PORT=6379    
-      - env_redis_host=${REDIS_HOST}      
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE}  
-      - RAILS_ENV=${RAILS_ENV}  
+      - env_redis_host=${REDIS_HOST}   
+      - env_redis_port=6379        
+      - env_encoding_working_file_path=/mnt/avalon/ingest  
+      - env_timeliner_url=http://localhost:3000/timeliner      
+      - env_streaming_http_base=http://localhost:8880/avalon
+      - env_streaming_rtmp_base=rtmp://localhost:8880/avalon
+      - env_streaming_content_path=/mnt/avalon/masterfiles     
+    volumes:
+      - ./data/masterfiles:/mnt/avalon/masterfiles
+      - ./data/dropbox:/mnt/avalon/dropbox   
+      - ./data/dropbox:/mnt/avalon/ingest         
     ports: []
