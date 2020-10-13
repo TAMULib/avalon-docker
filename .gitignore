@@ -4,3 +4,5 @@ data/fedora/
 data/database/
 data/solr/
 data/masterfiles/
+data/dropbox/
+data/ingest/
