@@ -4,20 +4,23 @@ LABEL       maintainer="Michael B. Klein <michael.klein@northwestern.edu>, Phuon
 RUN         curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
          && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
          && curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN         apt-get update && apt-get install -y \
-            mediainfo \
-            ffmpeg \
-            x264 \
-            cmake \
-            pkg-config \
-            lsof \
-            sendmail \
-            yarn \
-            nodejs \
-            imagemagick \
-	    dos2unix \
-         && rm -rf /var/lib/apt/lists/* \
-         && apt-get clean
+		 
+RUN		apt-get update
+
+RUN         apt-get install -y mediainfo 
+RUN         apt-get install -y ffmpeg 
+RUN         apt-get install -y x264 
+RUN         apt-get install -y cmake 
+RUN         apt-get install -y pkg-config 
+RUN         apt-get install -y lsof 
+RUN         apt-get install -y sendmail 
+RUN         apt-get install -y yarn 
+RUN         apt-get install -y nodejs 
+RUN         apt-get install -y imagemagick 
+RUN         apt-get install -y dos2unix 
+
+RUN         rm -rf /var/lib/apt/lists/* 
+RUN         apt-get clean
 
 ARG         CLIENT_MAX_BODY_SIZE=128m	
 COPY avalon_nginx.conf /etc/nginx/sites-available/avalon_nginx
@@ -47,8 +50,8 @@ RUN         cd avalon && \
               bundle install --path=vendor/gems --with postgres --without development test profiling mysql && \
               cd ..
 
-RUN         cd avalon \
-			&& bundle exec whenever -w -f config/docker_schedule.rb 
+#RUN         cd avalon \
+#			&& bundle exec whenever -w -f config/docker_schedule.rb 
 			
 RUN         cd avalon \			
 			&& bundle exec rake assets:precompile SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)')
