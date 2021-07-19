@@ -1,8 +1,12 @@
 ## Usage
 1. Clone this Repo
    git clone https://github.com/TAMULib/avalon-docker/
+   
    git checkout tamu_master
+   
    git status
+   
+   
    On branch tamu_master
 
 3. Copy dotenv.example to .env and fill in the relevant info.
