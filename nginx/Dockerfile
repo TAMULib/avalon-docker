@@ -31,3 +31,5 @@ RUN         mkdir /etc/service/nginx
 ADD         nginx.sh /etc/service/nginx/run
 RUN 		dos2unix /etc/service/nginx/run
 RUN         chmod +x /etc/service/nginx/run
+
+RUN		apt-get update

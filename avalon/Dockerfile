@@ -1,6 +1,12 @@
 FROM        phusion/passenger-ruby25
 LABEL       maintainer="Michael B. Klein <michael.klein@northwestern.edu>, Phuong Dinh <pdinh@indiana.edu>"
 
+# https://github.com/phusion/passenger-docker/issues/325#issuecomment-934482664
+
+RUN mv /etc/apt/sources.list.d /etc/apt/sources.list.d.bak
+RUN apt update && apt install -y ca-certificates
+RUN mv /etc/apt/sources.list.d.bak /etc/apt/sources.list.d
+
 RUN         curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
          && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
          && curl -sL https://deb.nodesource.com/setup_10.x | bash -
@@ -97,3 +103,4 @@ RUN 		dos2unix /etc/container_environment.sh
 RUN         mkdir /streamfiles && chmod 0777 /streamfiles
 VOLUME      /streamfiles
 
+RUN		apt-get update
