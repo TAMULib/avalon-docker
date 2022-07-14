@@ -4,7 +4,7 @@ AVALON_CONTAINER_NAME=avalon
 REDIS_CONTAINER_NAME=avalon-redis
 NGINX_CONTAINER_NAME=avalon-nginx
 FEDORA_CONTAINER_NAME=avalon-fedora
-SOLR_CONTAINER_NAME=avalon-solr
+SOLR_CONTAINER_NAME=avalonsolr
 
 #No underscores in name
 POSTGRES_CONTAINER_NAME=avalon-pgdb
@@ -23,7 +23,7 @@ REDIS_HOST=avalon-redis
 
 # Database host in URL needs to match POSTGRES_CONTAINER_NAME
 
-DATABASE_URL=postgresql://postgres:password@avalon-pgdb/avalon
+DATABASE_URL=postgres://postgres:password@avalon-pgdb/avalon
 
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=password
@@ -44,9 +44,9 @@ RAILS_ENV=production
 # SOLR Settings
 # SOLR host in URL needs to match SOLR_CONTAINER_NAME
 
-SOLR_URL=http://avalon-solr:8983/solr/avalon
+SOLR_URL=http://avalonsolr:8983/solr/avalon/
 
-SOLR_HOST=avalon-solr
+SOLR_HOST=avalonsolr
 SOLR_PORT=8983
 SOLR_BASE_PATH=avalon
 
@@ -54,7 +54,7 @@ SOLR_BASE_PATH=avalon
 # Fedora Settings
 # fedora host in URL needs to match FEDORA_CONTAINER_NAME
 
-FEDORA_URL=http://fedoraAdmin:fedoraAdmin@avalon-fedora:8080/fedora/rest/avalon
+FEDORA_URL=http://fedoraAdmin:fedoraAdmin@avalon-fedora:8080/fedora/rest/avalon/
 
 FEDORA_USER=
 FEDORA_PASSWORD=
