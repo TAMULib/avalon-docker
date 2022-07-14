@@ -1,49 +1,66 @@
 #Docker Settings
-RANCHER_IMAGE_VERSION=7.2.1
+RANCHER_IMAGE_VERSION=7.2.2
 AVALON_CONTAINER_NAME=avalon
-REDIS_CONTAINER_NAME=avalon_redis
-NGINX_CONTAINER_NAME=avalon_nginx
-VIC_SERVER=10.55.134.48
+REDIS_CONTAINER_NAME=avalon-redis
+NGINX_CONTAINER_NAME=avalon-nginx
+FEDORA_CONTAINER_NAME=avalon-fedora
+SOLR_CONTAINER_NAME=avalon-solr
+
+#No underscores in name
+POSTGRES_CONTAINER_NAME=avalon-pgdb
+
+VIC_SERVER=harbor.library.tamu.edu
 
 #
 # Redis Settings
 # REDIS_HOST needs to match REDIS_CONTAINER_NAME
 
-REDIS_HOST=avalon_redis
+REDIS_HOST=avalon-redis
 
 #
 # Database Settings
 #
 
+# Database host in URL needs to match POSTGRES_CONTAINER_NAME
+
+DATABASE_URL=postgresql://postgres:password@avalon-pgdb/avalon
+
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=password
 
-AVALON_DB_USER=avalon
-AVALON_DB_PASSWORD=password
+AVALON_DB_USER=
+AVALON_DB_PASSWORD=
 
-FEDORA_DB_USER=fedora
-FEDORA_DB_PASSWORD=password
+FEDORA_DB_USER=
+FEDORA_DB_PASSWORD=
 
 #
 # Avalon Application settings
 #
 APP_NAME=avalon
-
 RAILS_ENV=production
 
-DATABASE_URL=postgres://postgres:password@db/avalon
-SOLR_URL=http://solr:8983/solr/avalon
-FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest/avalon
+#
+# SOLR Settings
+# SOLR host in URL needs to match SOLR_CONTAINER_NAME
 
-FEDORA_USER=fedoraAdmin
-FEDORA_PASSWORD=fedoraAdmin
-FEDORA_HOST=fedora
-FEDORA_PORT=8080
-FEDORA_NAMESPACE=avalon
+SOLR_URL=http://avalon-solr:8983/solr/avalon
 
-SOLR_HOST=solr
+SOLR_HOST=avalon-solr
 SOLR_PORT=8983
 SOLR_BASE_PATH=avalon
+
+#
+# Fedora Settings
+# fedora host in URL needs to match FEDORA_CONTAINER_NAME
+
+FEDORA_URL=http://fedoraAdmin:fedoraAdmin@avalon-fedora:8080/fedora/rest/avalon
+
+FEDORA_USER=
+FEDORA_PASSWORD=
+FEDORA_HOST=avalon-fedora
+FEDORA_PORT=8080
+FEDORA_NAMESPACE=avalon
 
 SECRET_KEY_BASE=aaaa
 AVALON_BRANCH=tamu_master

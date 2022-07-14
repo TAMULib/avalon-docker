@@ -73,9 +73,9 @@ ARG SOLR_HOST_YML
 ARG SOLR_PORT_YML
 ARG SOLR_BASE_PATH_YML
 
-RUN sed -i s/{{SOLR_HOST_YML}}/${SOLR_HOST}/g  /home/app/avalon/config/solr.yml
-RUN sed -i s/{{SOLR_PORT_YML}}/${SOLR_PORT}/g  /home/app/avalon/config/solr.yml
-RUN sed -i s/{{SOLR_BASE_PATH_YML}}/${SOLR_BASE_PATH}/g  /home/app/avalon/config/solr.yml
+RUN sed -i s/{{SOLR_HOST_YML}}/${SOLR_HOST_YML}/g  /home/app/avalon/config/solr.yml
+RUN sed -i s/{{SOLR_PORT_YML}}/${SOLR_PORT_YML}/g  /home/app/avalon/config/solr.yml
+RUN sed -i s/{{SOLR_BASE_PATH_YML}}/${SOLR_BASE_PATH_YML}/g  /home/app/avalon/config/solr.yml
 
 ARG FEDORA_HOST_YML
 ARG FEDORA_PORT_YML
@@ -94,6 +94,7 @@ RUN sed -i s/{{FEDORA_PASSWORD_YML}}/${FEDORA_PASSWORD_YML}/g  /home/app/avalon/
 ADD         ./avalon.conf /etc/nginx/sites-available/avalon
 ADD         ./nginx_env.conf /etc/nginx/main.d/env.conf
 ADD         rails_init.sh /etc/my_init.d/30_rails_init.sh
+ADD         ./controlled_vocabulary.yml /home/app/avalon/config/controlled_vocabulary.yml
 
 USER        root
 RUN 		dos2unix /etc/my_init.d/30_rails_init.sh

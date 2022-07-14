@@ -2,10 +2,12 @@ version: '3.2'
 
 services:
   db:
+    container_name: ${POSTGRES_CONTAINER_NAME} 
     image: avalonmediasystem/db:fedora4
     build: ./db
     volumes:
       - ./data/database:/data
+      - ./data/avalon_code:/mnt/data      
     environment:
       - AVALON_DB_PASSWORD=${AVALON_DB_PASSWORD}
       - AVALON_DB_USER=${AVALON_DB_USER}      
@@ -15,6 +17,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
   fedora:
+    container_name: ${FEDORA_CONTAINER_NAME} 
     image: avalonmediasystem/fedora:4.7.5
     build:
       context: ./fedora
@@ -30,13 +33,14 @@ services:
     ports:
        - "8080:8080"      
   solr:
+    container_name: ${SOLR_CONTAINER_NAME}    
     image: avalonmediasystem/solr:latest
     build:
       context: ./solr
       args:
-        - AVALON_BRANCH
-        - AVALON_REPO
-        - AVALON_REPO_RAW
+        - TAMU_AVALON_BRANCH=${AVALON_BRANCH}
+        - TAMU_AVALON_REPO=${AVALON_REPO}
+        - TAMU_AVALON_REPO_RAW=${AVALON_REPO_RAW}
     volumes:
       - ./data/solr:/opt/solr/server/solr/mycores      
     entrypoint:
@@ -49,7 +53,7 @@ services:
   hls:
     container_name: ${NGINX_CONTAINER_NAME}   
     hostname: localhost:8880
-    image: 10.55.134.48/avalon/nginx:${RANCHER_IMAGE_VERSION}
+    image: ${VIC_SERVER}/avalon/nginx:${RANCHER_IMAGE_VERSION}
     build:
       context: ./nginx
     volumes:
@@ -70,10 +74,10 @@ services:
     build:
       context: ./avalon
       args:
-        - AVALON_BRANCH
-        - AVALON_REPO        
-        - RAILS_ENV
-        - SECRET_KEY_BASE   
+        - AVALON_BRANCH=${AVALON_BRANCH}  
+        - AVALON_REPO=${AVALON_REPO}        
+        - RAILS_ENV=${RAILS_ENV}  
+        - SECRET_KEY_BASE=${SECRET_KEY_BASE}   
         - CLIENT_MAX_BODY_SIZE=${CLIENT_MAX_BODY_SIZE}  
         - SOLR_HOST_YML=${SOLR_HOST}  
         - SOLR_PORT_YML=${SOLR_PORT}  
@@ -137,7 +141,7 @@ services:
       - ./data/masterfiles:/mnt/avalon/masterfiles
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
-      - ./data/gems:/gems
+      - ./data/gems:/gems  
     ports:
       - "3000:80"
   worker:
@@ -158,5 +162,7 @@ services:
       - env_streaming_content_path=/mnt/avalon/masterfiles     
     volumes:
       - ./data/masterfiles:/mnt/avalon/masterfiles
+      - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
+      - ./data/gems:/gems  
     ports: []
