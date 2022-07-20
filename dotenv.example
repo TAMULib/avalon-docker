@@ -28,11 +28,11 @@ DATABASE_URL=postgres://postgres:password@avalon-pgdb/avalon
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=password
 
-AVALON_DB_USER=
-AVALON_DB_PASSWORD=
+AVALON_DB_USER=avalon
+AVALON_DB_PASSWORD=password
 
-FEDORA_DB_USER=
-FEDORA_DB_PASSWORD=
+FEDORA_DB_USER=fedora
+FEDORA_DB_PASSWORD=password
 
 #
 # Avalon Application settings
@@ -53,14 +53,17 @@ SOLR_BASE_PATH=avalon
 #
 # Fedora Settings
 # fedora host in URL needs to match FEDORA_CONTAINER_NAME
+# If you have a namespace you need to ensure it is created 
+# The namespace is really for remote instances and not created by default on
+# local docker spin up
 
-FEDORA_URL=http://fedoraAdmin:fedoraAdmin@avalon-fedora:8080/fedora/rest/avalon/
+FEDORA_URL=http://fedoraAdmin:fedoraAdmin@avalon-fedora:8080/fedora/rest/
 
-FEDORA_USER=
-FEDORA_PASSWORD=
+FEDORA_USER=fedoraAdmin
+FEDORA_PASSWORD=fedoraAdmin
 FEDORA_HOST=avalon-fedora
 FEDORA_PORT=8080
-FEDORA_NAMESPACE=avalon
+FEDORA_NAMESPACE=
 
 SECRET_KEY_BASE=aaaa
 AVALON_BRANCH=tamu_master

@@ -137,11 +137,12 @@ services:
       - env_streaming_http_base=http://localhost:8880/avalon
       - env_streaming_rtmp_base=rtmp://localhost:8880/avalon
       - env_streaming_content_path=/mnt/avalon/masterfiles    
+      - PASSENGER_APP_ENV=development
     volumes:
       - ./data/masterfiles:/mnt/avalon/masterfiles
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
-      - ./data/gems:/gems  
+      - ./data/gems:/gems      
     ports:
       - "3000:80"
   worker:
