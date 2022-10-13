@@ -92,7 +92,7 @@ RUN sed -i s/{{FEDORA_PASSWORD_YML}}/${FEDORA_PASSWORD_YML}/g  /home/app/avalon/
 ###
 
 ADD         ./avalon.conf /etc/nginx/sites-available/avalon
-ADD         ./nginx_env.conf /etc/nginx/main.d/env.conf
+ADD         ./nginx_env.conf /etc/nginx/main.d/env.conf 
 ADD         rails_init.sh /etc/my_init.d/30_rails_init.sh
 ADD         ./controlled_vocabulary.yml /home/app/avalon/config/controlled_vocabulary.yml
 

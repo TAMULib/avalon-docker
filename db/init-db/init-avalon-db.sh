@@ -10,6 +10,6 @@ EOSQL
 # Add Doug account since we are using LDAP auth.  This will need to be a manual after spin up.
 # psql -v ON_ERROR_STOP=1 -d avalon --username "$POSTGRES_USER" <<-EOSQL
 # INSERT INTO role_maps(entry, parent_id) VALUES ('cn=douglas hahn,ou=applications,ou=digital initiatives,ou=user services,ou=useraccounts,dc=library,dc=tamu,dc=edu', 1);
+# INSERT INTO role_maps(entry, parent_id) VALUES ('cn=douglas hahn,ou=applications,ou=digital initiatives,ou=user services,ou=useraccounts,dc=library,dc=tamu,dc=edu', 2);
 # INSERT INTO role_maps(entry, parent_id) VALUES ('cn=douglas hahn,ou=applications,ou=digital initiatives,ou=user services,ou=useraccounts,dc=library,dc=tamu,dc=edu', 3);
-# INSERT INTO role_maps(entry, parent_id) VALUES ('cn=douglas hahn,ou=applications,ou=digital initiatives,ou=user services,ou=useraccounts,dc=library,dc=tamu,dc=edu', 5);
 # EOSQL
