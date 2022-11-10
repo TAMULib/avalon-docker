@@ -55,6 +55,9 @@ http {
     vod_hls_absolute_index_urls off;
     vod_hls_absolute_master_urls off;
  
+ # Reload nginx config	
+ #   /usr/local/nginx/sbin/nginx -s reload
+ 
  #   location /raw/ {
  #     alias $env_master_file_location/;
  #     autoindex on;

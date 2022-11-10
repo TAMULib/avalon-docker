@@ -1,4 +1,4 @@
-FROM        phusion/passenger-ruby25
+FROM        phusion/passenger-ruby27
 LABEL       maintainer="Michael B. Klein <michael.klein@northwestern.edu>, Phuong Dinh <pdinh@indiana.edu>"
 
 # https://github.com/phusion/passenger-docker/issues/325#issuecomment-934482664
@@ -36,7 +36,7 @@ RUN chmod 0755 /etc/nginx/sites-available/avalon_nginx
 RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
             rm /etc/nginx/sites-enabled/default && \
             rm -f /etc/service/nginx/down && \
-            ln -s /etc/nginx/sites-available/avalon /etc/nginx/sites-enabled/avalon && \
+            ln -s /etc/nginx/sites-available/avalon_nginx /etc/nginx/sites-enabled/avalon && \
             chown app:docker_env /etc/container_environment.sh
 
 ARG         AVALON_REPO=https://github.com/TAMULib/avalon.git
@@ -53,18 +53,20 @@ ARG         RAILS_ENV=production
 RUN         cd avalon && \
               gem install bundler && \
               bundle config build.nokogiri --use-system-libraries && \
-              bundle install --path=vendor/gems --with postgres --without development test profiling mysql && \
+              bundle install --path=vendor/gems --with aws postgres --without development test profiling mysql && \
               cd ..
 
-#RUN         cd avalon \
-#			&& bundle exec whenever -w -f config/docker_schedule.rb 
-			
+USER        root
+RUN         cd /home/app/avalon && npm install -g n && n 11
+
+USER        app
+
 RUN         cd avalon \			
 			&& bundle exec rake assets:precompile SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)')
 
-
 USER        root
-RUN chown -R app:app /home/app/avalon
+## disable test build
+###RUN chown -R app:app /home/app/avalon
 
 ###
 # Ensure Configurations are set both .YML
@@ -91,7 +93,10 @@ RUN sed -i s/{{FEDORA_PASSWORD_YML}}/${FEDORA_PASSWORD_YML}/g  /home/app/avalon/
 
 ###
 
-ADD         ./avalon.conf /etc/nginx/sites-available/avalon
+## redundant
+##ADD         ./avalon.conf /etc/nginx/sites-available/avalon
+##
+
 ADD         ./nginx_env.conf /etc/nginx/main.d/env.conf 
 ADD         rails_init.sh /etc/my_init.d/30_rails_init.sh
 ADD         ./controlled_vocabulary.yml /home/app/avalon/config/controlled_vocabulary.yml
@@ -105,3 +110,4 @@ RUN         mkdir /streamfiles && chmod 0777 /streamfiles
 VOLUME      /streamfiles
 
 RUN		apt-get update
+

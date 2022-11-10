@@ -47,5 +47,21 @@ echo "* * * * * /bin/bash -l -c '/mnt/avalon/dropbox_rights.sh' >/dev/null 2>&1"
 chmod 600 /var/spool/cron/crontabs/root
 service cron reload
 
+rm -f tmp/pids/server.pid
+
+####
+
+cd /home/app/avalon
+#yarn install
+#bundle install
+
+#gem install bundler
+#bundle config build.nokogiri --use-system-libraries
+#bundle install --path=vendor/gems --with postgres --without development test profiling mysql
+#cd ..
+
+#tail -f >/dev/null
+
+#####
 cd /home/app/avalon
 su -m -c "bundle exec rake db:migrate" app
