@@ -66,7 +66,7 @@ RUN         cd avalon \
 
 USER        root
 ## disable test build
-###RUN chown -R app:app /home/app/avalon
+RUN chown -R app:app /home/app/avalon
 
 ###
 # Ensure Configurations are set both .YML
