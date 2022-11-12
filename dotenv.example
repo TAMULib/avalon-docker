@@ -1,18 +1,91 @@
-# Required Settings
-APP_NAME=avalon
-AVALON_BRANCH=master
-SETTINGS__DOMAIN=http://localhost:8888/
-STREAMING_HOST=localhost
-AVALON_DB_PASSWORD=
-FEDORA_DB_PASSWORD=
-SECRET_KEY_BASE=
+#Docker Settings
+RANCHER_IMAGE_VERSION=7.2.2
+AVALON_CONTAINER_NAME=avalon
+REDIS_CONTAINER_NAME=avalon-redis
+NGINX_CONTAINER_NAME=avalon-nginx
+FEDORA_CONTAINER_NAME=avalon-fedora
+SOLR_CONTAINER_NAME=avalonsolr
 
-# Recommended Settings
-EMAIL_COMMENTS=avalon-comments@example.edu
-EMAIL_NOTIFICATION=avalon-notifications@example.edu
-EMAIL_SUPPORT=avalon-support@example.edu
-SMTP_ADDRESS=smtp.example.edu
-SMTP_PORT=587
+#No underscores in name
+POSTGRES_CONTAINER_NAME=avalon-pgdb
+
+VIC_SERVER=harbor.library.tamu.edu
+
+#
+# Redis Settings
+# REDIS_HOST needs to match REDIS_CONTAINER_NAME
+
+REDIS_HOST=avalon-redis
+
+#
+# Database Settings
+#
+
+# Database host in URL needs to match POSTGRES_CONTAINER_NAME
+
+DATABASE_URL=postgres://postgres:password@avalon-pgdb/avalon
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+
+AVALON_DB_USER=avalon
+AVALON_DB_PASSWORD=password
+
+FEDORA_DB_USER=fedora
+FEDORA_DB_PASSWORD=password
+
+#
+# Avalon Application settings
+#
+APP_NAME=avalon
+RAILS_ENV=production
+
+#
+# SOLR Settings
+# SOLR host in URL needs to match SOLR_CONTAINER_NAME
+
+SOLR_URL=http://avalonsolr:8983/solr/avalon/
+
+SOLR_HOST=avalonsolr
+SOLR_PORT=8983
+SOLR_BASE_PATH=avalon
+
+#
+# Fedora Settings
+# fedora host in URL needs to match FEDORA_CONTAINER_NAME
+# If you have a namespace you need to ensure it is created 
+# The namespace is really for remote instances and not created by default on
+# local docker spin up
+
+FEDORA_URL=http://fedoraAdmin:fedoraAdmin@avalon-fedora:8080/fedora/rest/
+
+FEDORA_USER=fedoraAdmin
+FEDORA_PASSWORD=fedoraAdmin
+FEDORA_HOST=avalon-fedora
+FEDORA_PORT=8080
+FEDORA_NAMESPACE=
+
+SECRET_KEY_BASE=aaaa
+AVALON_BRANCH=tamu_master
+AVALON_REPO=https://github.com/TAMULib/avalon.git
+AVALON_REPO_RAW=https://raw.githubusercontent.com/TAMULib/avalon/
+AVALON_HOSTNAME=localhost
+
+CLIENT_MAX_BODY_SIZE=2050m
+
+LDAP_USER=
+LDAP_PASSWORD=
+
+EMAIL_COMMENTS=someone@anywhere.com
+EMAIL_NOTIFICATION=someone@anywhere.com
+EMAIL_SUPPORT=someone@anywhere.com
+SMTP_ADDRESS=relay.tamu.edu
+SMTP_PORT=25
+
+# This is the hostname that Kaltura / nginx can get to
+# so for local docker it is the avalon container name.
+RTMP_AVALON_URL=http://avalon
+
 
 # Optional Settings
 # Z3950_HOST=

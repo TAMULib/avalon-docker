@@ -1,0 +1,60 @@
+#####
+
+# commands
+bundle exec rake avalon:reindex
+
+#dangerous
+#rake task to completely clean the data out of your install: 
+bundle exec rake avalon:wipeout
+
+#I had to change the rtmp_base and http_base in settings.yml to point to a public domain. I believe I have to run a command in rails console to update the objects that are already in the system
+rake avalon:derivative:set_streams
+
+#batch
+#To manually start a batch ingest job, run as avalon user
+su - <%= @avalon_user %>
+cd <%= @avalon_www_root %>
+source <%= @avalon_home -%>/.rvm/scripts/rvm
+rvm use <%= @ruby_version %>
+RAILS_ENV=<%= @rails_environment %>
+rake avalon:batch:ingest
+rake avalon:batch:ingest_stalled_check
+rake avalon:batch:ingest_status_check
+
+#Rails Console
+# root of your Avalon install (the same place you’d run `rake` from)
+bundle exec rails c
+
+# reset the minter id due to db corruption
+MinterState.destroy_all
+# Then mint a new id to recreate the minter state and ensure everything is working properly
+ActiveFedora::Noid::Service.new.mint
+##
+
+#URLs
+
+<%= @server_www_protocol -%>://<%= @server_name -%>/about/health
+<%= @server_www_protocol -%>://<%= @server_name %>
+<%= @server_www_protocol -%>://<%= @server_name -%>/jobs/overview
+http://<%= @matterhorn_host_port -%>/
+<%= @server_www_protocol -%>://<%= @server_name -%>/about
+
+## For email to work it needs a mailer..
+yum install postfix
+vim /etc/postfix/main.cf
+relayhost = smtp-relay.tamu.edu
+myhostname = <%= @server_name %>
+
+# Avalon cron
+* * * * * su - avalon -l -c 'cd <%= @avalon_www_root -%> && source <%= @avalon_home -%>/.rvm/scripts/rvm && rvm use <%= @ruby_version -%> && RAILS_ENV=<%= @rails_environment -%> && script/locking_runner batch_ingest bundle exec rake avalon:batch:ingest --silent >> log/whenever_cron.log 2>&1'
+0,15,30,45 * * * * su - avalon -l -c 'cd <%= @avalon_www_root -%> && source <%= @avalon_home -%>/.rvm/scripts/rvm && rvm use <%= @ruby_version -%> && RAILS_ENV=<%= @rails_environment -%> && script/locking_runner batch_ingest bundle exec rake avalon:batch:ingest_status_check --silent >> log/whenever_cron.log 2>&1'
+0 0 * * * su - avalon -l -c 'cd <%= @avalon_www_root -%> && source <%= @avalon_home -%>/.rvm/scripts/rvm && rvm use <%= @ruby_version -%> && RAILS_ENV=<%= @rails_environment -%> && script/locking_runner batch_ingest bundle exec rake avalon:batch:ingest_stalled_check --silent >> log/whenever_cron.log 2>&1'
+
+
+passenger-config restart-app
+
+psql -v ON_ERROR_STOP=1 -d avalon --username "$POSTGRES_USER" <<-EOSQL
+INSERT INTO role_maps(entry, parent_id) VALUES ('cn=douglas hahn,ou=applications,ou=digital initiatives,ou=user services,ou=useraccounts,dc=library,dc=tamu,dc=edu', 1);
+INSERT INTO role_maps(entry, parent_id) VALUES ('cn=douglas hahn,ou=applications,ou=digital initiatives,ou=user services,ou=useraccounts,dc=library,dc=tamu,dc=edu', 3);
+INSERT INTO role_maps(entry, parent_id) VALUES ('cn=douglas hahn,ou=applications,ou=digital initiatives,ou=user services,ou=useraccounts,dc=library,dc=tamu,dc=edu', 5);
+EOSQL

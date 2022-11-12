@@ -1,5 +1,9 @@
 .env
 .DS_Store
-masterfiles/*
-.*.swp
-.*.swo
+data/fedora/
+data/database/
+data/solr/
+data/masterfiles/
+data/dropbox/
+data/ingest/
+data/avalon_code/
