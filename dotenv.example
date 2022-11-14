@@ -1,5 +1,5 @@
 #Docker Settings
-RANCHER_IMAGE_VERSION=7.2.2
+RANCHER_IMAGE_VERSION=7.3.0
 AVALON_CONTAINER_NAME=avalon
 REDIS_CONTAINER_NAME=avalon-redis
 NGINX_CONTAINER_NAME=avalon-nginx
@@ -45,7 +45,6 @@ RAILS_ENV=production
 # SOLR host in URL needs to match SOLR_CONTAINER_NAME
 
 SOLR_URL=http://avalonsolr:8983/solr/avalon/
-
 SOLR_HOST=avalonsolr
 SOLR_PORT=8983
 SOLR_BASE_PATH=avalon
@@ -57,16 +56,20 @@ SOLR_BASE_PATH=avalon
 # The namespace is really for remote instances and not created by default on
 # local docker spin up
 
-FEDORA_URL=http://fedoraAdmin:fedoraAdmin@avalon-fedora:8080/fedora/rest/
+FEDORA_URL=http://fedoraAdmin:fedoraAdmin@avalon-fedora:8080/fedora/rest/avalon
 
 FEDORA_USER=fedoraAdmin
 FEDORA_PASSWORD=fedoraAdmin
 FEDORA_HOST=avalon-fedora
 FEDORA_PORT=8080
-FEDORA_NAMESPACE=
+FEDORA_NAMESPACE=avalon
+FEDORA_BASE_PATH=
+
+# For backslash escape it /avalon/ becomes \\/avalon
+#FEDORA_BASE_PATH=\\/avalon\\/
 
 SECRET_KEY_BASE=aaaa
-AVALON_BRANCH=tamu_master
+AVALON_BRANCH=tamu_development-7.3.0
 AVALON_REPO=https://github.com/TAMULib/avalon.git
 AVALON_REPO_RAW=https://raw.githubusercontent.com/TAMULib/avalon/
 AVALON_HOSTNAME=localhost
@@ -85,7 +88,6 @@ SMTP_PORT=25
 # This is the hostname that Kaltura / nginx can get to
 # so for local docker it is the avalon container name.
 RTMP_AVALON_URL=http://avalon
-
 
 # Optional Settings
 # Z3950_HOST=
