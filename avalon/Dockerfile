@@ -57,7 +57,7 @@ RUN         cd avalon && \
               cd ..
 
 USER        root
-RUN         cd /home/app/avalon && npm install -g n && n 11
+RUN         cd /home/app/avalon && npm install -g n && n 12
 
 USER        app
 

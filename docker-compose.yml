@@ -108,6 +108,7 @@ services:
       - MASTER_FILE_STRATEGY=delete
       - MEDIAINFO_PATH=/usr/bin/mediainfo
       - RAILS_ENV=${RAILS_ENV}
+      - RAILS_ADDITIONAL_HOSTS=${NGINX_CONTAINER_NAME}
       - SMTP_ADDRESS
       - SMTP_AUTHENTICATION
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
@@ -146,7 +147,7 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems
-      - ./data/avalon_code/avalon:/home/app/avalon      
+      - ./data/avalon_code/avalon_7.4.0:/home/app/avalon            
     ports:
       - "3000:80"
   worker:
@@ -160,7 +161,8 @@ services:
       - FEDORA_NAMESPACE=${FEDORA_NAMESPACE}
       - FEDORA_URL=${FEDORA_URL}
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}    
-      - RAILS_ENV=${RAILS_ENV}       
+      - RAILS_ENV=${RAILS_ENV}
+      - RAILS_ADDITIONAL_HOSTS=${NGINX_CONTAINER_NAME}
       - DATABASE_URL=${DATABASE_URL}   
       - SOLR_URL=${SOLR_URL}      
       - env_redis_host=${REDIS_HOST}   
@@ -174,5 +176,5 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems  
-      - ./data/avalon_code/avalon:/home/app/avalon      
+      - ./data/avalon_code/avalon_7.4.0:/home/app/avalon      
     ports: []
