@@ -147,7 +147,7 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems
-      - ./data/avalon_code/avalon_7.4.0:/home/app/avalon            
+#      - ./data/avalon_code/avalon_7.4.0:/home/app/avalon            
     ports:
       - "3000:80"
   worker:
@@ -176,5 +176,5 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems  
-      - ./data/avalon_code/avalon_7.4.0:/home/app/avalon      
+#      - ./data/avalon_code/avalon_7.4.0:/home/app/avalon      
     ports: []
