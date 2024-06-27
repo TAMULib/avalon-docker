@@ -51,7 +51,7 @@ ADD         config /home/app/avalon/
 ARG         RAILS_ENV=production
 
 RUN         cd avalon && \
-              gem install bundler && \
+              gem install bundler -v 2.4.22 && \
               bundle config build.nokogiri --use-system-libraries && \
               bundle install --path=vendor/gems --with aws postgres --without development test profiling mysql && \
               cd ..
