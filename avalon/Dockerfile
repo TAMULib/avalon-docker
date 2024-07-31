@@ -109,5 +109,7 @@ RUN 		dos2unix /etc/container_environment.sh
 RUN         mkdir /streamfiles && chmod 0777 /streamfiles
 VOLUME      /streamfiles
 
+RUN git config --global --add safe.directory /home/app/avalon
+
 RUN		apt-get update
 
