@@ -1,10 +1,11 @@
 #Docker Settings
-RANCHER_IMAGE_VERSION=7.3.0
-AVALON_CONTAINER_NAME=avalon
+RANCHER_IMAGE_VERSION=7.4.0
+
+AVALON_CONTAINER_NAME=tamu_development-styling-auth
 REDIS_CONTAINER_NAME=avalon-redis
 NGINX_CONTAINER_NAME=avalon-nginx
 FEDORA_CONTAINER_NAME=avalon-fedora
-SOLR_CONTAINER_NAME=avalonsolr
+SOLR_CONTAINER_NAME=avalon-solr
 
 #No underscores in name
 POSTGRES_CONTAINER_NAME=avalon-pgdb
@@ -44,8 +45,8 @@ RAILS_ENV=production
 # SOLR Settings
 # SOLR host in URL needs to match SOLR_CONTAINER_NAME
 
-SOLR_URL=http://avalonsolr:8983/solr/avalon/
-SOLR_HOST=avalonsolr
+SOLR_URL=http://avalon-solr:8983/solr/avalon/
+SOLR_HOST=avalon-solr
 SOLR_PORT=8983
 SOLR_BASE_PATH=avalon
 
@@ -69,21 +70,27 @@ FEDORA_BASE_PATH=
 #FEDORA_BASE_PATH=\\/avalon\\/
 
 SECRET_KEY_BASE=aaaa
-AVALON_BRANCH=tamu_development-7.3.0
+AVALON_BRANCH=tamu_development-7.4.0
 AVALON_REPO=https://github.com/TAMULib/avalon.git
 AVALON_REPO_RAW=https://raw.githubusercontent.com/TAMULib/avalon/
 AVALON_HOSTNAME=localhost
 
 CLIENT_MAX_BODY_SIZE=2050m
 
-LDAP_USER=
-LDAP_PASSWORD=
-
 EMAIL_COMMENTS=someone@anywhere.com
 EMAIL_NOTIFICATION=someone@anywhere.com
 EMAIL_SUPPORT=someone@anywhere.com
 SMTP_ADDRESS=relay.tamu.edu
 SMTP_PORT=25
+
+# Setting up an initial users requires a few more steps .  
+# check out the init-avalon-db.sh in the db folder for more info.
+# if not running SAML or LDAP do the signup of /users/sign_up and create the archivist1@example.com
+# run these insert commands in the Postgres server command line.
+
+# INSERT INTO role_maps(entry, parent_id) VALUES ('archivist1@example.com', 1);
+# INSERT INTO role_maps(entry, parent_id) VALUES ('archivist1@example.com', 2);
+# INSERT INTO role_maps(entry, parent_id) VALUES ('archivist1@example.com', 3);
 
 # This is the hostname that Kaltura / nginx can get to
 # so for local docker it is the avalon container name.
@@ -96,3 +103,12 @@ RTMP_AVALON_URL=http://avalon
 # Z3950_ATTRIBUTE=
 # LTI_AUTH_KEY=
 # LTI_AUTH_SECRET=
+
+# These would be used for local development and enabling SAML.  
+SAML_SP_ENTITY_ID=
+SAML_NAME_IDENTIFIER_FORMAT=
+SAML_ISSUER=
+SAML_IDP_SSO_SERVICE_URL=
+SAML_IDP_SLO_SERVICE_URL=
+SAML_IDP_CERT_FINGERPRINT=
+SAML_ASSERTION_CONSUMER_SERVICE_URL=
