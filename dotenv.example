@@ -1,7 +1,7 @@
 #Docker Settings
 RANCHER_IMAGE_VERSION=7.4.0
 
-AVALON_CONTAINER_NAME=tamu_development-styling-auth
+AVALON_CONTAINER_NAME=tamu_development
 REDIS_CONTAINER_NAME=avalon-redis
 NGINX_CONTAINER_NAME=avalon-nginx
 FEDORA_CONTAINER_NAME=avalon-fedora
