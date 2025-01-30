@@ -40,7 +40,7 @@ RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
             chown app:docker_env /etc/container_environment.sh
 
 ARG         AVALON_REPO=https://github.com/TAMULib/avalon.git
-ARG         AVALON_BRANCH=tamu_development
+ARG         AVALON_BRANCH=tamu_master-7.5.0
 
 WORKDIR     /home/app
 USER        app
@@ -67,35 +67,6 @@ RUN         cd avalon \
 USER        root
 ## disable test build
 RUN chown -R app:app /home/app/avalon
-
-###
-# Ensure Configurations are set both .YML
-###
-ARG SOLR_HOST_YML
-ARG SOLR_PORT_YML
-ARG SOLR_BASE_PATH_YML
-
-RUN sed -i s/{{SOLR_HOST_YML}}/${SOLR_HOST_YML}/g  /home/app/avalon/config/solr.yml
-RUN sed -i s/{{SOLR_PORT_YML}}/${SOLR_PORT_YML}/g  /home/app/avalon/config/solr.yml
-RUN sed -i s/{{SOLR_BASE_PATH_YML}}/${SOLR_BASE_PATH_YML}/g  /home/app/avalon/config/solr.yml
-
-ARG FEDORA_HOST_YML
-ARG FEDORA_PORT_YML
-ARG FEDORA_BASE_PATH_YML
-ARG FEDORA_USER_YML
-ARG FEDORA_PASSWORD_YML
-
-RUN sed -i s/{{FEDORA_HOST_YML}}/${FEDORA_HOST_YML}/g  /home/app/avalon/config/fedora.yml
-RUN sed -i s/{{FEDORA_PORT_YML}}/${FEDORA_PORT_YML}/g  /home/app/avalon/config/fedora.yml
-RUN sed -i s/{{FEDORA_BASE_PATH_YML}}/${FEDORA_BASE_PATH_YML}/g  /home/app/avalon/config/fedora.yml
-RUN sed -i s/{{FEDORA_USER_YML}}/${FEDORA_USER_YML}/g  /home/app/avalon/config/fedora.yml
-RUN sed -i s/{{FEDORA_PASSWORD_YML}}/${FEDORA_PASSWORD_YML}/g  /home/app/avalon/config/fedora.yml
-
-###
-
-## redundant
-##ADD         ./avalon.conf /etc/nginx/sites-available/avalon
-##
 
 ADD         ./nginx_env.conf /etc/nginx/main.d/env.conf 
 ADD         rails_init.sh /etc/my_init.d/30_rails_init.sh

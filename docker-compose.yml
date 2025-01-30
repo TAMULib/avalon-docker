@@ -117,12 +117,15 @@ services:
       - SMTP_PASSWORD
       - SMTP_PORT
       - SMTP_USER_NAME
+      - SOLR_HOST=${SOLR_HOST}
+      - SOLR_PORT=${SOLR_PORT}
       - SOLR_URL=${SOLR_URL}
       - SYSTEM_GROUPS=administrator,group_manager,manager
       - Z3950_ATTRIBUTE
       - Z3950_DATABASE
       - Z3950_HOST
       - Z3950_PORT
+      - env_rails_hosts=avalon
       - env_redis_host=${REDIS_HOST}   
       - env_redis_port=6379        
       - env_avalon_hostname=localhost  
@@ -152,7 +155,8 @@ services:
       - ./data/masterfiles:/mnt/avalon/masterfiles
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
-      - ./data/gems:/gems        
+      - ./data/gems:/gems   
+#      - ./data/avalon_code/avalon:/home/app/avalon
     ports:
       - "3000:80"
   worker:
@@ -168,16 +172,19 @@ services:
       - RAILS_ENV=${RAILS_ENV}
       - RAILS_ADDITIONAL_HOSTS=${NGINX_CONTAINER_NAME}
       - DATABASE_URL=${DATABASE_URL}   
-      - SOLR_URL=${SOLR_URL}      
+      - SOLR_HOST=${SOLR_HOST}
+      - SOLR_PORT=${SOLR_PORT}
+      - SOLR_URL=${SOLR_URL}    
       - env_redis_host=${REDIS_HOST}   
       - env_redis_port=6379     
       - env_encoding_working_file_path=/mnt/avalon/ingest  
       - env_streaming_http_base=http://localhost:8880/avalon
       - env_streaming_rtmp_base=rtmp://localhost:8880/avalon
-      - env_streaming_content_path=/mnt/avalon/masterfiles     
+      - env_streaming_content_path=/mnt/avalon/masterfiles   
     volumes:
       - ./data/masterfiles:/mnt/avalon/masterfiles
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
-      - ./data/gems:/gems       
+      - ./data/gems:/gems  
+#      - ./data/avalon_code/avalon:/home/app/avalon      
     ports: []
