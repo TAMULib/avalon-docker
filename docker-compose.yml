@@ -125,10 +125,10 @@ services:
       - Z3950_DATABASE
       - Z3950_HOST
       - Z3950_PORT
-      - env_rails_hosts=avalon
+      - env_rails_hosts=${AVALON_HOSTNAME}
       - env_redis_host=${REDIS_HOST}   
       - env_redis_port=6379        
-      - env_avalon_hostname=localhost  
+      - env_avalon_hostname=${AVALON_HOSTNAME}
       - env_avalon_port=3000
       - env_avalon_protocol=http
       - env_dropbox_path=/mnt/avalon/dropbox
@@ -137,9 +137,9 @@ services:
       - env_email_comments=${EMAIL_COMMENTS} 
       - env_email_notification=${EMAIL_NOTIFICATION} 
       - env_email_support=${EMAIL_SUPPORT} 
-      - env_timeliner_url=http://localhost:3000/timeliner      
-      - env_streaming_http_base=http://localhost:8880/avalon
-      - env_streaming_rtmp_base=rtmp://localhost:8880/avalon
+      - env_timeliner_url=http://${AVALON_HOSTNAME}:3000/timeliner      
+      - env_streaming_http_base=http://${KALTURA_HOSTNAME}:8880/avalon
+      - env_streaming_rtmp_base=rtmp://${KALTURA_HOSTNAME}:8880/avalon
       - env_streaming_content_path=/mnt/avalon/masterfiles  
       - env_initial_user=${INITIAL_USER}  
 # Enable these for use with SAML and local development
@@ -156,7 +156,7 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems   
-#      - ./data/avalon_code/avalon:/home/app/avalon
+      - ./data/avalon_code/avalon:/home/app/avalon
     ports:
       - "3000:80"
   worker:
@@ -186,5 +186,5 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems  
-#      - ./data/avalon_code/avalon:/home/app/avalon      
+      - ./data/avalon_code/avalon:/home/app/avalon      
     ports: []
