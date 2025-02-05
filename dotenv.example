@@ -1,7 +1,7 @@
 #Docker Settings
-RANCHER_IMAGE_VERSION=7.4.0
+RANCHER_IMAGE_VERSION=7.5.0
 
-AVALON_CONTAINER_NAME=tamu_development
+AVALON_CONTAINER_NAME=avalon-dev
 REDIS_CONTAINER_NAME=avalon-redis
 NGINX_CONTAINER_NAME=avalon-nginx
 FEDORA_CONTAINER_NAME=avalon-fedora
@@ -70,10 +70,10 @@ FEDORA_BASE_PATH=
 #FEDORA_BASE_PATH=\\/avalon\\/
 
 SECRET_KEY_BASE=aaaa
-AVALON_BRANCH=tamu_development-7.4.0
+AVALON_BRANCH=tamu_master-7.5.0
 AVALON_REPO=https://github.com/TAMULib/avalon.git
 AVALON_REPO_RAW=https://raw.githubusercontent.com/TAMULib/avalon/
-AVALON_HOSTNAME=localhost
+AVALON_HOSTNAME=avalon-dev
 
 CLIENT_MAX_BODY_SIZE=2050m
 
@@ -93,9 +93,31 @@ SMTP_PORT=25
 # INSERT INTO role_maps(entry, parent_id) VALUES ('archivist1@example.com', 2);
 # INSERT INTO role_maps(entry, parent_id) VALUES ('archivist1@example.com', 3);
 
+# Here are the Kaltura / NGINX config settings.
+# 
+KALTURA_HOSTNAME=avalon-nginx
+
 # This is the hostname that Kaltura / nginx can get to
 # so for local docker it is the avalon container name.
-RTMP_AVALON_URL=http://avalon
+# historically this has been the URL to the avalon box
+# http://avalon-pre.library.tamu.edu
+# http://avalon-dev:3000
+RTMP_AVALON_URL=http://avalon-dev
+
+# Historically this has been 80 or 8880 for docker.  This is the port Kaltura runs on.
+KALTURA_STREAMING_PORT=8880
+
+# Historically this has been 127.0.0.1
+RESOLVER_IP=127.0.0.1
+
+# Historically this has been
+# For Rancher this is the clusterip for the avalon box under the service discovery tab
+# http://10.43.48.137
+# 
+PROXY_PASS_URL=http://avalon-dev
+
+# Historically this has been /mnt/avalon/masterfiles
+MASTER_FILE_LOCATION=/mnt/avalon/masterfiles
 
 # Optional Settings
 # Z3950_HOST=

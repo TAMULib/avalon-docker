@@ -58,10 +58,11 @@ services:
     volumes:
       - ./data/masterfiles:/mnt/avalon/masterfiles  
     environment:
+      - env_kaltura_streaming_port=${KALTURA_STREAMING_PORT}
       - env_rtmp_avalon_url=${RTMP_AVALON_URL}
-      - env_avalon_streaming_port=8880
-      - env_master_file_location=/mnt/avalon/masterfiles
-      - env_proxy_pass_ip=avalon
+      - env_master_file_location=${MASTER_FILE_LOCATION}
+      - env_proxy_pass_url=${PROXY_PASS_URL}
+      - env_resolver_ip=${RESOLVER_IP}      
     ports:
        - "8880:8880"
   redis:
@@ -118,7 +119,7 @@ services:
       - env_redis_host=${REDIS_HOST}   
       - env_redis_port=6379        
       - env_avalon_hostname=${AVALON_HOSTNAME}
-      - env_avalon_port=3000
+      - env_avalon_port=80
       - env_avalon_protocol=http
       - env_dropbox_path=/mnt/avalon/dropbox
       - env_dropbox_upload_uri=\\cifs.library.tamu.edu/avalon/dropbox/
@@ -126,7 +127,7 @@ services:
       - env_email_comments=${EMAIL_COMMENTS} 
       - env_email_notification=${EMAIL_NOTIFICATION} 
       - env_email_support=${EMAIL_SUPPORT} 
-      - env_timeliner_url=http://${AVALON_HOSTNAME}:3000/timeliner      
+      - env_timeliner_url=http://${AVALON_HOSTNAME}:80/timeliner      
       - env_streaming_http_base=http://${KALTURA_HOSTNAME}:8880/avalon
       - env_streaming_rtmp_base=rtmp://${KALTURA_HOSTNAME}:8880/avalon
       - env_streaming_content_path=/mnt/avalon/masterfiles  
@@ -146,9 +147,9 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems   
-      - ./data/avalon_code/avalon:/home/app/avalon
+#      - ./data/avalon_code/avalon:/home/app/avalon
     ports:
-      - "3000:80"
+      - "80:80"
   worker:
     <<: *avalon
     container_name: ${AVALON_CONTAINER_NAME}-worker 
@@ -176,5 +177,5 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems  
-      - ./data/avalon_code/avalon:/home/app/avalon      
+#      - ./data/avalon_code/avalon:/home/app/avalon      
     ports: []
