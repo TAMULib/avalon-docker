@@ -74,7 +74,7 @@ http {
       sub_filter_once off;
       sub_filter '.ts' ".ts?token=$token";
 
-      auth_request /auth;
+      $env_auth_request_line auth_request /auth;
       add_header Access-Control-Allow-Headers '*';
       add_header Access-Control-Expose-Headers 'Server,range,Content-Length,Content-Range';
       add_header Access-Control-Allow-Methods 'GET, HEAD, OPTIONS';

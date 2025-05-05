@@ -57,12 +57,15 @@ services:
       context: ./nginx
     volumes:
       - ./data/masterfiles:/mnt/avalon/masterfiles  
+      - ./data/nginx/logs:/var/log/nginx
+      - ./data/nginx/etc/nginx:/etc/nginx      
     environment:
       - env_kaltura_streaming_port=${KALTURA_STREAMING_PORT}
       - env_rtmp_avalon_url=${RTMP_AVALON_URL}
       - env_master_file_location=${MASTER_FILE_LOCATION}
       - env_proxy_pass_url=${PROXY_PASS_URL}
-      - env_resolver_ip=${RESOLVER_IP}      
+      - env_resolver_ip=${RESOLVER_IP} 
+      - env_auth_request_line=${AUTH_REQUEST_LINE}      
     ports:
        - "8880:8880"
   redis:
@@ -147,7 +150,7 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems   
-#      - ./data/avalon_code/avalon:/home/app/avalon
+      - ./data/avalon_code/avalon:/home/app/avalon
     ports:
       - "80:80"
   worker:
@@ -177,5 +180,5 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems  
-#      - ./data/avalon_code/avalon:/home/app/avalon      
+      - ./data/avalon_code/avalon:/home/app/avalon      
     ports: []

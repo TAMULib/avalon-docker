@@ -64,6 +64,10 @@ USER        app
 RUN         cd avalon \			
 			&& bundle exec rake assets:precompile SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)')
 
+#to restart the app
+# passenger-config restart-app
+#
+
 USER        root
 ## disable test build
 RUN chown -R app:app /home/app/avalon
