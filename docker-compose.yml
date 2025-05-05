@@ -57,8 +57,6 @@ services:
       context: ./nginx
     volumes:
       - ./data/masterfiles:/mnt/avalon/masterfiles  
-      - ./data/nginx/logs:/var/log/nginx
-      - ./data/nginx/etc/nginx:/etc/nginx      
     environment:
       - env_kaltura_streaming_port=${KALTURA_STREAMING_PORT}
       - env_rtmp_avalon_url=${RTMP_AVALON_URL}
@@ -150,7 +148,6 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems   
-      - ./data/avalon_code/avalon:/home/app/avalon
     ports:
       - "80:80"
   worker:
@@ -180,5 +177,4 @@ services:
       - ./data/dropbox:/mnt/avalon/dropbox   
       - ./data/ingest:/mnt/avalon/ingest         
       - ./data/gems:/gems  
-      - ./data/avalon_code/avalon:/home/app/avalon      
     ports: []

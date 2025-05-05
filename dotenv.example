@@ -116,6 +116,11 @@ RESOLVER_IP=127.0.0.1
 # 
 PROXY_PASS_URL=http://avalon-dev
 
+# this is prepended to the "auth_request /auth;" line in the nginx config
+# to disable this line I have been putting a #  this is because on Rancher I have been having streaming pass thru issues.
+# 
+AUTH_REQUEST_LINE=
+
 # Historically this has been /mnt/avalon/masterfiles
 MASTER_FILE_LOCATION=/mnt/avalon/masterfiles
 
