@@ -1,5 +1,5 @@
 #Docker Settings
-RANCHER_IMAGE_VERSION=7.5.1
+RANCHER_IMAGE_VERSION=7.6.0
 
 AVALON_CONTAINER_NAME=avalon-dev
 REDIS_CONTAINER_NAME=avalon-redis
@@ -70,7 +70,7 @@ FEDORA_BASE_PATH=
 #FEDORA_BASE_PATH=\\/avalon\\/
 
 SECRET_KEY_BASE=aaaa
-AVALON_BRANCH=tamu_master-7.5.1
+AVALON_BRANCH=tamu_master-7.6.0
 AVALON_REPO=https://github.com/TAMULib/avalon.git
 AVALON_REPO_RAW=https://raw.githubusercontent.com/TAMULib/avalon/
 AVALON_HOSTNAME=avalon-dev

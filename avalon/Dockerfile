@@ -40,7 +40,7 @@ RUN         ln -s /usr/bin/lsof /usr/sbin/ && \
             chown app:docker_env /etc/container_environment.sh
 
 ARG         AVALON_REPO=https://github.com/TAMULib/avalon.git
-ARG         AVALON_BRANCH=tamu_master-7.5.1
+ARG         AVALON_BRANCH=tamu_master-7.6.0
 
 WORKDIR     /home/app
 USER        app
